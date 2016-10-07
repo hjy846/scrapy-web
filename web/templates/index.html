@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Residence Macau{% endblock %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="/static/js/morris-chart/morris.css">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <div class="row">
+        <div class="col-sm-12">
+            <section class="panel">
+                <header class="panel-heading">
+                    加油站
+                    <span class="tools pull-right">
+                        <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        <a href="javascript:;" class="fa fa-times"></a>
+                    </span>
+                </header>
+                <div class="panel-body">
+                    <div id="stations" class="media-gal">
+                        {% for station in stations%}
+                        <div class="images item" >
+                            <a station-id="{{station.StationID}}" station-name="{{station.FullName}}" href="#" data-toggle="modal">
+                                <img src="/static/images/gas_station.jpg" alt="" />
+                                
+                            </a>
+                            <p>{%if station.isActive %}<i class="fa fa-check-square-o">{% endif %}</i>{{station.FullName}}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!--body wrapper end-->
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+{% autoescape off %}
+
+{% endautoescape %}
+</script>
+{%endblock%}
+

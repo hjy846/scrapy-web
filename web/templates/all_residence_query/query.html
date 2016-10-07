@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Residence Macau{% endblock %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="/static/js/morris-chart/morris.css">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+	<section class="panel">
+            <header class="panel-heading">
+                查詢語句：
+            </header>
+            <div class="panel-body">
+                <form method="get" class="form-horizontal bucket-form">
+                    <div class="form-group">
+                        
+                        <div class="col-sm-10">
+                            <textarea rows="6" class="form-control" id="query_info">{"info.building":"鴻發花園", "info.size":{"$gt":300},"info.update_time":{"$gt":"2016-09-20"}, "info.floor":{"$regex":"高層"}}</textarea>
+                        </div>
+
+                    </div>
+					<div><button class="btn btn-success" type="button" id="query_button">Query</button></div>
+                </form>
+                
+            </div>
+    </section>
+    <div id=result>
+		
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<!--script src="static/js/morris-chart/morris.init.js"></script-->
+<!--dynamic table-->
+<script src="/static/js/morris-chart/morris.js"></script>
+<script src="/static/js/morris-chart/raphael-min.js"></script>
+<script src="/static/js/all_residence_query/query.js"></script>
+<script type="text/javascript">
+{% autoescape off %}
+
+Morris.Line({
+    element: 'graph-area-line',
+    behaveLikeLine: false,
+    data: [
+        {x: '2016-05-01', y: 600},
+        {x: '2016-09-02', y: 650},
+        {x: '2016-09-03', y: 620},
+        {x: '2016-09-04', y: 630},
+        {x: '2016-09-06', y: 630},
+        {x: '2016-09-07', y: 680},
+        {x: '2016-09-08', y: 620},
+        {x: '2016-09-09', y: 690},
+        {x: '2016-09-10', y: 610}
+    ],
+    xkey: 'x',
+    ykeys: ['y'],
+    labels: ['Y']
+});
+
+{% endautoescape %}
+</script>
+{% endblock %}

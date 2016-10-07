@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Residence Macau{% endblock %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="/static/js/morris-chart/morris.css">
+<link href="/static/js/advanced-datatable/css/demo_table.css" rel="stylesheet" />
+<link rel="stylesheet" href="/static/js/data-tables/DT_bootstrap.css" />
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    
+    <div class="row">
+        <div class="col-sm-12">
+        <section class="panel">
+        <header class="panel-heading">
+            路環新盘列表
+            <span class="tools pull-right">
+                <a href="javascript:;" class="fa fa-chevron-down"></a>
+                <a href="javascript:;" class="fa fa-times"></a>
+            </span>
+        </header>
+        <div class="panel-body">
+        <div class="adv-table">
+        <table class="display table table-bordered" id="hidden-table-info">
+        <thead>
+        <tr>
+            <th width=120>楼盘</th>
+            <th width=50>面积</th>
+            <th width=90>实用面积</th>
+            <th width=90>价格</th>
+            <th width=90>呎价</th>
+            <th width=200>remark</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="gradeX">
+            <td></td>
+            <td>Internet
+                Explorer 4.0</td>
+            <td class="hidden-phone">Win 95+</td>
+            <td class="center hidden-phone">4</td>
+            <td class="center hidden-phone">X</td>
+            <td class="center hidden-phone">X</td>
+        </tr>
+        
+        
+        
+        </tbody>
+        </table>
+
+        </div>
+        </div>
+        </section>
+        </div>
+        </div>
+
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/morris-chart/morris.js"></script>
+<script src="/static/js/morris-chart/raphael-min.js"></script>
+<!--script src="static/js/morris-chart/morris.init.js"></script-->
+<!--dynamic table-->
+<script type="text/javascript" language="javascript" src="/static/js/advanced-datatable/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/static/js/data-tables/DT_bootstrap.js"></script>
+<!--dynamic table initialization -->
+<script src="/static/js/dynamic_table_init.js"></script>
+<script src="/static/js/new_residence/coloane.js"></script>
+<script type="text/javascript">
+{% autoescape off %}
+// Use Morris.Area instead of Morris.Line
+
+{% endautoescape %}
+</script>
+{% endblock %}
