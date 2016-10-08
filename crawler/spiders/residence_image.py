@@ -10,16 +10,17 @@ from scrapy.conf import settings
 import pymongo
 import logging
 from scrapy.conf import settings
-from malimalihome.items import MalimalihomeItem, ResidenceDetailItem, ResidenceImageItem
+from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class ResidenceImageSpider(scrapy.Spider):
     name = "residence_image"
-    allowed_domains = ["malimalihome.net"]
-    start_urls = ('http://www.malimalihome.net',
-    )
+    #allowed_domains = ["xxx.net"]
+    start_urls = []
+    start_urls.append(settings['START_URL'])
+
 
     def __init__(self, crawl_date = None, region = None, *args, **kwargs):
         super(ResidenceImageSpider, self).__init__(*args, **kwargs)

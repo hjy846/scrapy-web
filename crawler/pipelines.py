@@ -10,10 +10,10 @@ from scrapy.conf import settings
 from scrapy.exceptions import DropItem
 from datetime import datetime
 from scrapy.pipelines.images import ImagesPipeline
-from malimalihome.items import MalimalihomeItem, ResidenceDetailItem, ResidenceImageItem
+from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem, ZhongyuanItem
 
 
-class MalimalihomePipeline(object):
+class ResidencePipeline(object):
     def __init__(self):
         self.server = settings['MONGODB_SERVER']
         self.port = settings['MONGODB_PORT']
@@ -53,10 +53,11 @@ class MalimalihomePipeline(object):
     def process_item(self, item, spider):
         if isinstance(item, ResidenceImageItem):
             return self.process_image(item)
-        elif isinstance(item, ResidenceDetailItem) or isinstance(item, MalimalihomeItem):
+        elif isinstance(item, ResidenceDetailItem) or isinstance(item, ResidenceItem):
             return self.process_detail(item)
-        else:
-            raise DropItem('unknown item')
+        return item
+        #else:
+        #    raise DropItem('unknown item')
 
 
 class MyImagesPipeline(ImagesPipeline):
@@ -71,3 +72,25 @@ class MyImagesPipeline(ImagesPipeline):
             raise DropItem("Item contains no images")
         item['image_paths'] = image_paths
         return item
+
+class ZhongyuanPipeline(object):
+    def __init__(self):
+        self.server = settings['MONGODB_SERVER']
+        self.port = settings['MONGODB_PORT']
+        self.db = settings['MONGODB_DB']
+        #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
+        connection = pymongo.MongoClient(self.server, self.port)
+        self.db = connection[self.db]   
+        
+    def process_pdf(self, item):
+        print '#*@' * 100
+        print item
+
+    def process_item(self, item, spider):
+        print '#@**' * 100
+        print item
+        print type(item)
+        if isinstance(item, ZhongyuanItem):
+            return self.process_pdf(item)
+        else:
+            raise DropItem('unknown item')

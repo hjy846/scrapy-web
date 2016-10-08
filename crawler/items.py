@@ -1,7 +1,7 @@
 import scrapy
 from scrapy.contrib.pipeline.images import ImagesPipeline
 
-class MalimalihomeItem(scrapy.Item):
+class ResidenceItem(scrapy.Item):
     building_name = scrapy.Field()
     price = scrapy.Field()
     bed_room_num = scrapy.Field()
@@ -44,10 +44,15 @@ class ResidenceDetailItem(scrapy.Item):
     detail_insert_time = scrapy.Field()
     image_list = scrapy.Field()
 
-#class MaliMaliHomeImagesPipeline(ImagesPipeline):
 
 class ResidenceImageItem(scrapy.Item):
     # ... other item fields ...
     image_urls = scrapy.Field()
     images = scrapy.Field()
     image_paths = scrapy.Field()
+
+class ZhongyuanItem(scrapy.Item):
+    # ... other item fields ...
+    path = scrapy.Field()
+    url = scrapy.Field()
+    

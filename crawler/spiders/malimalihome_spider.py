@@ -1,7 +1,7 @@
 # -*- encoding:utf-8 -*-
 
 import scrapy
-from malimalihome.items import MalimalihomeItem, ResidenceDetailItem, ResidenceImageItem
+from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem
 import sys
 import time
 import urlparse
@@ -15,16 +15,14 @@ import traceback
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-class MaliMaliHomeSpider(scrapy.Spider): 
-    name = "malimalihome"
-    allowed_domains = ['malimalihome.net']
-    #start_urls = [
-    #    "http://www.malimalihome.net/residential?status=1&prepage=60&page=1",
-    #]
+class ResidenceSpider(scrapy.Spider): 
+    name = "residence"
+    #allowed_domains = ['xxx.net']
+    
     start_urls = []
 
     def __init__(self, crawl_date = None, region = None, *args, **kwargs):
-        super(MaliMaliHomeSpider, self).__init__(*args, **kwargs)
+        super(ResidenceSpider, self).__init__(*args, **kwargs)
         #处理时间
         now = datetime.now()
         yesterday = now - timedelta(days=1)
@@ -44,7 +42,7 @@ class MaliMaliHomeSpider(scrapy.Spider):
         self.now = now.strftime('%Y%m%d_%H%M')
 
         #处理起始爬取url
-        url = "http://www.malimalihome.net/residential?status=1&prepage=10&page=1"
+        url = settings['INIT_URL']
         
 
         #根据地区爬取
@@ -53,7 +51,6 @@ class MaliMaliHomeSpider(scrapy.Spider):
         if self.region_num != None:
             url += '&region1=%s' % self.region_num
 
-        #url = "http://www.malimalihome.net/residential/1276956"
         self.start_urls.append(url)
 
         #房产列表网页保存路径
@@ -106,7 +103,7 @@ class MaliMaliHomeSpider(scrapy.Spider):
                 if update_time < self.crawl_date:
                     self.go_next = False
                     break
-                item = MalimalihomeItem()
+                item = ResidenceItem()
                 item['building_name'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-c"]/div[@class="result-list-c-title"]/a/text()').extract()[0]
                 item['link'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-c"]/div[@class="result-list-c-title"]/a/@href').extract()[0]
                 item['_id'] = item['link'].split('/')[-1:][0]
@@ -134,7 +131,6 @@ class MaliMaliHomeSpider(scrapy.Spider):
                 item['photo_num'] = int(item['photo_num'][0].split()[0]) if len(item['photo_num']) else 0
                 #self.fp.write(json.dumps(dict(item), ensure_ascii = False) + '\n')
                 #爬取详情页
-                #item['link'] = 'http://www.malimalihome.net/residential/1303025'
                 item['list_insert_time'] = datetime.now()
                 yield scrapy.Request(item['link'], self.parse_detail)
                 yield item
@@ -231,7 +227,7 @@ class MaliMaliHomeSpider(scrapy.Spider):
 
     def parse_image(self, response):
         item = ResidenceImageItem()
-        item['image_urls'] = ["http://media.malimalihome.net/images/props/001/216/082/2/570431.jpeg", 
-        "http://media.malimalihome.net/images/props/001/216/082/1/570432.jpeg"]
+        item['image_urls'] = ["http://media.xxx.net/images/props/001/216/082/2/570431.jpeg", 
+        "http://media.xxx.net/images/props/001/216/082/1/570432.jpeg"]
         yield item
         
