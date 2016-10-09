@@ -34,7 +34,7 @@ class ResidencePipeline(object):
     def __init__(self):
         self.server = settings['MONGODB_SERVER']
         self.port = settings['MONGODB_PORT']
-        self.db = settings['MONGODB_DB']
+        self.db = settings['MONGODB_DB_RAW']
         #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
         connection = pymongo.MongoClient(self.server, self.port)
         self.db = connection[self.db]   
@@ -48,6 +48,7 @@ class ResidencePipeline(object):
     def process_image(self, item):
         try:
             for image_info in item['images']:
+                #print image_info['url']
                 self.image_collection.update_one({'url':image_info['url']}, {'$set':dict(image_info)}, upsert = True)
         except Exception as e:
             #print '#' * 100
@@ -227,4 +228,4 @@ class ZhongyuanPipeline(object):
         if isinstance(item, ZhongyuanItem):
             return self.process_pdf(item)
         else:
-            raise DropItem('unknown item')
+            return item

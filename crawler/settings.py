@@ -67,7 +67,7 @@ ITEM_PIPELINES = {
     'scrapy.pipelines.images.ImagesPipeline': 1
 }
 
-IMAGES_STORE = './images'
+IMAGES_STORE = 'D:\code\scrapy-web\crawler\images'
 IMAGES_EXPIRES = 3650
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -92,14 +92,15 @@ IMAGES_EXPIRES = 3650
 MONGODB_SERVER='127.0.0.1'
 MONGODB_PORT=8888
 
-MONGODB_DB_RAW='residence_raw'
-MONGODB_COLLECTION_ALL_RESIDENCES='all_residences'
-MONGODB_COLLECTION_IMAGE='image_info'
-
 MONGODB_DB='residence'
+MONGODB_COLLECTION_ALL_RESIDENCES='all_residences'
 MONGODB_COLLECTION_NEW_ADD='new_add_residences'
 MONGODB_COLLECTION_RESIDENCE_NUM_BY_DAY='residence_num_by_day'
 MONGODB_COLLECTION_ZHONGYUAN='zhongyuan'
+
+
+MONGODB_DB_RAW='residence_raw'
+MONGODB_COLLECTION_IMAGE='image_info'
 
 GO_NEXT=False
 DOWNLOAD_TIMEOUT=30
