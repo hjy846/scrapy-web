@@ -8,10 +8,10 @@ class CentalineSpider(scrapy.Spider):
     name = "centaline"
     allowed_domains = ["www.centaline-macau.com"]
     start_urls = (
-        'http://www.centaline-macau.com/icms/template.aspx?series=62&article=57089',
+        'http://www.centaline-macau.com/icms/template.aspx?series=62',
     )
 
-    save_path = '../output/zhongyuan'
+    save_path = './output/zhongyuan'
 
     def parse(self, response):
         return self.get_download_url(response)

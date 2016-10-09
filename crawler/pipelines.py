@@ -181,28 +181,25 @@ class ZhongyuanPipeline(object):
                 if u'樓宇名稱' in info[1][0]:
                     continue
 
+                new_info = []
+                for i in info[1]:
+                    if i != '':
+                        new_info.append(i)
                 residence = {}
-                residence['building'] = info[1][0]
-                residence['block_floor'] = info[1][1]
-                if len(info[1]) == 6:
+                residence['building'] = new_info[0]
+                residence['block_floor'] = new_info[1]
+                if len(new_info) == 6:
                     residence['remark'] = ""
-                    residence['size'] = int(''.join(info[1][2].split(',')))
-                    residence['price'] = int(''.join(info[1][3].strip('$').split(','))) / 10000
-                    residence['price_per_ft2'] = int(''.join(info[1][4].strip('$').split(',')))
-                    residence['market'] = info[1][5]
+                    residence['size'] = int(''.join(new_info[2].split(',')))
+                    residence['price'] = int(''.join(new_info[3].strip('$').split(','))) / 10000
+                    residence['price_per_ft2'] = int(''.join(new_info[4].strip('$').split(',')))
+                    residence['market'] = new_info[5]
                 else:
-                    if info[1][2] == '':
-                        residence['remark'] = ""
-                        residence['size'] = int(''.join(info[1][3].split(',')))
-                        residence['price'] = int(''.join(info[1][4].strip('$').split(','))) / 10000
-                        residence['price_per_ft2'] = int(''.join(info[1][5].strip('$').split(',')))
-                        residence['market'] = info[1][6]
-                    else:
-                        residence['size'] = int(''.join(info[1][2].split(',')))
-                        residence['price'] = int(''.join(info[1][3].strip('$').split(','))) / 10000
-                        residence['price_per_ft2'] = int(''.join(info[1][4].strip('$').split(',')))
-                        residence['remark'] = info[1][5]
-                        residence['market'] = info[1][6]
+                    residence['size'] = int(''.join(new_info[2].split(',')))
+                    residence['price'] = int(''.join(new_info[3].strip('$').split(','))) / 10000
+                    residence['price_per_ft2'] = int(''.join(new_info[4].strip('$').split(',')))
+                    residence['remark'] = new_info[5]
+                    residence['market'] = new_info[6]
                     
                 residence['region'] = region
                 residence['date_beg'] = date_beg
