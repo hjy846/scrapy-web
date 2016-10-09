@@ -8,7 +8,7 @@ class CentalineSpider(scrapy.Spider):
     name = "centaline"
     allowed_domains = ["www.centaline-macau.com"]
     start_urls = (
-        'http://www.centaline-macau.com/icms/template.aspx?series=62&article=59486',
+        'http://www.centaline-macau.com/icms/template.aspx?series=62&article=57089',
     )
 
     save_path = '../output/zhongyuan'
@@ -27,13 +27,13 @@ class CentalineSpider(scrapy.Spider):
                 download_url = response.urljoin(sel)
                 path = '%s/%s/' % (self.save_path, download_url.split('/')[-2:-1][0])
                 filename = download_url.split('/')[-1].replace(' ', '_')
-                print path, filename
+                #print path, filename
                 if os.path.exists(path + filename):
                     continue
                 yield scrapy.Request(download_url, self.parse_save_pdf)
 
     def parse_save_pdf(self, response):
-        print '*^' * 100
+        #print '*^' * 100
         path = '%s/%s/' % (self.save_path, response.url.split('/')[-2:-1][0])
         if not os.path.exists(path):
             os.makedirs(path)

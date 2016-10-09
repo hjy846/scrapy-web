@@ -103,35 +103,56 @@ if __name__ == '__main__':
     print date_beg, date_end
     
     for info in residence_list[1:-1]:
-        if len(info[1]) == 1:
-            if u'氹仔' in info[1][0]:
-                region = 'taipa'
-            elif u'澳門' in info[1][0]:
-                region = 'macau'
-            if u'租賃成交' in info[1][0]:
-                #print 'rent'
-                #print info
-                break
-            continue
+        try:
+            if len(info[1]) == 1:
+                if u'氹仔' in info[1][0]:
+                    region = 'taipa'
+                elif u'澳門' in info[1][0]:
+                    region = 'macau'
+                if u'租賃成交' in info[1][0]:
+                    #print 'rent'
+                    #print info
+                    break
+                continue
 
-        if info[1][0] == u'樓宇名稱':
-            continue
+            if u'樓宇名稱' in info[1][0]:
+                continue
 
-        item = {}
-        item['building'] = info[1][0]
-        item['block_floor'] = info[1][1]
-        item['remark'] = info[1][2]
-        item['size'] = int(''.join(info[1][3].split(',')))
-        item['price'] = int(''.join(info[1][4].strip('$').split(','))) / 10000
-        item['price_per_ft2'] = int(''.join(info[1][5].strip('$').split(',')))
-        item['market'] = info[1][6]
-        item['region'] = region
-        item['date_beg'] = date_beg
-        item['date_end'] = date_end
-        find_item = copy.deepcopy(item)
-        item['insert_time'] = datetime.now()
-        COLLECTION.update(find_item, {'$set':item}, upsert = True)
-        #print item
+            print info
+            residence = {}
+            residence['building'] = info[1][0]
+            residence['block_floor'] = info[1][1]
+            if len(info[1]) == 6:
+                residence['remark'] = ""
+                residence['size'] = int(''.join(info[1][2].split(',')))
+                residence['price'] = int(''.join(info[1][3].strip('$').split(','))) / 10000
+                residence['price_per_ft2'] = int(''.join(info[1][4].strip('$').split(',')))
+                residence['market'] = info[1][5]
+            else:
+                if info[1][2] == '':
+                    residence['remark'] = ""
+                    residence['size'] = int(''.join(info[1][3].split(',')))
+                    residence['price'] = int(''.join(info[1][4].strip('$').split(','))) / 10000
+                    residence['price_per_ft2'] = int(''.join(info[1][5].strip('$').split(',')))
+                    residence['market'] = info[1][6]
+                else:
+                    residence['size'] = int(''.join(info[1][2].split(',')))
+                    residence['price'] = int(''.join(info[1][3].strip('$').split(','))) / 10000
+                    residence['price_per_ft2'] = int(''.join(info[1][4].strip('$').split(',')))
+                    residence['remark'] = info[1][5]
+                    residence['market'] = info[1][6]
+            
+            residence['region'] = region
+            residence['date_beg'] = date_beg
+            residence['date_end'] = date_end
+            find_residence = copy.deepcopy(residence)
+            residence['insert_time'] = datetime.now()
+            COLLECTION.update(find_residence, {'$set':residence}, upsert = True)
+        except Exception as e:
+            print 'Error'
+            print e
+            continue
+        #print residence
 
 
     

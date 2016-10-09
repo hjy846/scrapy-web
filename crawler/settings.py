@@ -67,7 +67,7 @@ ITEM_PIPELINES = {
     'scrapy.pipelines.images.ImagesPipeline': 1
 }
 
-IMAGES_STORE = 'D:\code\scrapy-web-dev\crawler\images'
+IMAGES_STORE = './images'
 IMAGES_EXPIRES = 3650
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -99,9 +99,11 @@ MONGODB_COLLECTION_IMAGE='image_info'
 MONGODB_DB='residence'
 MONGODB_COLLECTION_NEW_ADD='new_add_residences'
 MONGODB_COLLECTION_RESIDENCE_NUM_BY_DAY='residence_num_by_day'
+MONGODB_COLLECTION_ZHONGYUAN='zhongyuan'
 
 GO_NEXT=False
 DOWNLOAD_TIMEOUT=30
 
 INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=10&page=1"
 START_URL="http://www.malimalihome.net"
+
