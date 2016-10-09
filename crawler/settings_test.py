@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for malimalihome project
+# Scrapy settings for residence project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,14 +9,14 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'malimalihome'
+BOT_NAME = 'residence'
 
-SPIDER_MODULES = ['malimalihome.spiders']
-NEWSPIDER_MODULE = 'malimalihome.spiders'
+SPIDER_MODULES = ['crawler.spiders']
+NEWSPIDER_MODULE = 'crawler.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'malimalihome (+http://www.yourdomain.com)'
+#USER_AGENT = 'residence (+http://www.yourdomain.com)'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS=32
@@ -44,13 +44,13 @@ NEWSPIDER_MODULE = 'malimalihome.spiders'
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'malimalihome.middlewares.MyCustomSpiderMiddleware': 543,
+#    'crawler.middlewares.MyCustomSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'malimalihome.middlewares.MyCustomDownloaderMiddleware': 543,
+#    'crawler.middlewares.MyCustomDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -62,11 +62,12 @@ NEWSPIDER_MODULE = 'malimalihome.spiders'
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'malimalihome.pipelines.MalimalihomePipeline': 300,
+    'crawler.pipelines.ResidencePipeline': 300,
+    'crawler.pipelines.ZhongyuanPipeline': 400,
     'scrapy.pipelines.images.ImagesPipeline': 1
 }
 
-IMAGES_STORE = './images/'
+IMAGES_STORE = 'D:\code\scrapy-web\crawler\images'
 IMAGES_EXPIRES = 3650
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -91,13 +92,19 @@ IMAGES_EXPIRES = 3650
 MONGODB_SERVER='127.0.0.1'
 MONGODB_PORT=8888
 
-MONGODB_DB_RAW='malimalihome_raw_test'
+MONGODB_DB='residence_test'
 MONGODB_COLLECTION_ALL_RESIDENCES='all_residences'
-MONGODB_COLLECTION_IMAGE='image_info'
-
-MONGODB_DB='malimalihome_test'
 MONGODB_COLLECTION_NEW_ADD='new_add_residences'
 MONGODB_COLLECTION_RESIDENCE_NUM_BY_DAY='residence_num_by_day'
+MONGODB_COLLECTION_ZHONGYUAN='zhongyuan'
+
+
+MONGODB_DB_RAW='residence_raw_test'
+MONGODB_COLLECTION_IMAGE='image_info'
 
 GO_NEXT=False
 DOWNLOAD_TIMEOUT=30
+
+INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=10&page=1"
+START_URL="http://www.malimalihome.net"
+
