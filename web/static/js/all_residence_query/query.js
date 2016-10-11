@@ -6,11 +6,12 @@ $(function(){
         
     //})
 
-    jQuery('#query_button').click(function(){
+    function query_residence(page){
         jQuery('#query_button').attr('disabled', 'disabled')
         query_info = jQuery('#query_info').val()
         console.log(query_info)
-        url = "/api/all_residence_query"
+        query_page = page
+        url = "/api/all_residence_query?page=" + query_page
         //data = JSON.parse(query_info)
         data = {'params':query_info}
 
@@ -60,7 +61,7 @@ $(function(){
                                             <i class="fa fa-angle-right"></i>\
                                         </a></div></section></div>'
                 content += '<div class="col-md-9">\
-                                <h1 class=""><a href="#">' + json['data'][i]['building_name'] + '</a></h1>'
+                                <h1 class=""><a target="_blank" href="http://www.malimalihome.net/residential/' + json['data'][i]['_id'] + '">' + json['data'][i]['building_name'] + '</a></h1>'
                 content += '<p class=" auth-row"><strong><font color="red" size="5">$' + json['data'][i]['price'] +'</font></strong> 萬 |'
                 if(json['data'][i]['size']){
                     content += '建築<font color="red">'+json['data'][i]['size']+'</font>|'
@@ -83,31 +84,75 @@ $(function(){
                 content += json['data'][i]['update_time']
                 content += '</p>'
                 content += '<p>' + json['data'][i]['remark'] + '</p></div></div>\
-                    \
-                </div>\
-            </div>'
-                                    /*
-                            
-                            
-                                       
-                            
-                            
-
-                            
-                        
-                        <div class="col-md-4">
-                            <div id="graph-area-line"></div>
-                        </div>
-                        
-                    </div>
-                    
-                </div>
-            </div>"*/
-                //console.log(content)
+                                \
+                            </div>\
+                            </div>'
                 jQuery('#result').append(content)
                 jQuery('#c-slide'+i).carousel('pause')
             }
+
+            //pagina
+            var query_pagination = jQuery('#query_pagination')
+            query_pagination.attr('class', 'pagination pagination-lg')
+            query_pagination.empty()
+            console.log(json['total_page'], json['total'])
+            present_num_left = 3
+
+            //json['page'] = 2
+            //json['total_page'] = 3
+            min = Math.max(1, (json['page'] - present_num_left * 2))
+            max = Math.min(json['total_page'], min + present_num_left * 2)
+            
+            var i = min
+            for(; i < json['page'] - present_num_left; ++i){
+                console.log(i)
+                max = Math.min(json['total_page'], i + present_num_left * 2)
+                console.log(max)
+                if(max >= json['total_page']){
+                    break
+                }
+            }
+            min = i;
+            max = Math.min(json['total_page'], min + present_num_left * 2)
+            prepage = Math.max(1, json['page'] - 1)
+            nextpage = Math.min(json['total_page'], json['page'] + 1)
+            query_pagination.append('<li><a href="#" page="' + prepage + '">«</a></li>')
+            for(var i = min; i <= max; ++i){
+                console.log(i)
+                if(i == json['page'])
+                    content = '<li class="active"><a href="#" page="' + i + '">' + i + '</a></li>'
+                else{
+                    content = '<li><a href="#" page="' + i + '">' + i + '</a></li>'
+                }
+                query_pagination.append(content)
+                
+            }
+            query_pagination.append('<li><a href="#" page="' + nextpage + '">»</a></li>')
+            /*
+            if(json['total_page'] - json['page'] * 2){
+                query_pagination.append('<li class="disabled"><a href="#">«</a></li>')
+                query_pagination.append('<li class="active"><a href="#" page="1">1</a></li>')
+                var i = 1
+                for(;i<present_num&&i<json['total_page'];++i){
+                    content = '<li><a href="#" page="' + (i+ 1) + '">' + (i+ 1) + '</a></li>'
+                    query_pagination.append(content)
+                }
+                query_pagination.append('<li><a href="#" page="' + 2 + '">»</a></li>')
+            }else if (json['page'] == 1){
+                jQuery('#query_pagination').append('<li><a>«</a></li>')
+            }*/
+
             jQuery('#query_button').removeAttr('disabled')
         })
+    }
+    
+    jQuery('#query_button').click(function(){
+        //console.log('query')
+        query_residence(1)
+    })
+
+    jQuery('a[page]').live('click', function(e){
+        //console.log(jQuery(e.target).attr('page'))
+        query_residence(jQuery(e.target).attr('page'))
     })
 })

@@ -9,6 +9,7 @@ from bson import json_util
 
 from datetime import datetime, timedelta
 import json
+import math
 
 # Create your views here.
 def get_residence_num(request):
@@ -116,14 +117,17 @@ def get_new_residence(region, date_beg):
 
 def all_residence_query(request):
     ret_dict = {'errorno':0, 'data':[], 'total':0}
-    query_params = json.loads(request.GET.get('params'))
-    page = request.GET.get('page', 1)
-    count = request.GET.get('count', 10)
-    beg = (page - 1) * count
-    end = page * count
     try:
+        query_params = json.loads(request.GET.get('params'))
+        page = int(request.GET.get('page', 1))
+        count = int(request.GET.get('count', 10))
+        beg = (page - 1) * count
+        end = page * count
+    
         ret_dict['total'] = AllResidenceModel.objects(__raw__=query_params).count()
-        result = AllResidenceModel.objects(__raw__=query_params).order_by('price_per_ft2')[beg:end]
+        ret_dict['total_page'] = math.ceil(ret_dict['total'] * 1.0 / count)
+        ret_dict['page'] = page
+        result = AllResidenceModel.objects(__raw__=query_params).order_by('info.price_per_ft2')[beg:end]
     except Exception as e:
         ret_dict['errorno'] = 1
         ret_dict['errormsg'] = repr(e)
