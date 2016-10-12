@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Residence Macau{% endblock %}
+
+{% block stylesheet %}
+<link href="/static/js/advanced-datatable/css/demo_table.css" rel="stylesheet" />
+<link rel="stylesheet" href="/static/js/data-tables/DT_bootstrap.css" />
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <section class="panel">
+            <header class="panel-heading">
+                查詢語句：
+            </header>
+            <div class="panel-body">
+                <form method="get" class="form-horizontal bucket-form">
+                    <div class="form-group">
+                        
+                        <div class="col-sm-10">
+                            <textarea rows="6" class="form-control" id="query_info">{"building":"鴻發花園", "date_beg":{"$gt":"2014-09-20"}}</textarea>
+                        </div>
+
+                    </div>
+                    <div><button class="btn btn-success" type="button" id="query_button">Query</button></div>
+                </form>
+                
+            </div>
+    </section>
+
+    <div id=result class="hidden">
+        <div class="row">
+        <div class="col-sm-12">
+        <section class="panel">
+        <header class="panel-heading">
+            查询结果
+            <span class="tools pull-right">
+                <a href="javascript:;" class="fa fa-chevron-down"></a>
+                <a href="javascript:;" class="fa fa-times"></a>
+             </span>
+        </header>
+        <div class="panel-body">
+        <div class="adv-table">
+        <table  class="display table table-bordered table-striped" id="dynamic-table">
+        <thead>
+        <tr>
+            <th>楼盘</th>
+            <th>楼层座期</th>
+            <th>成交时间</th>
+            <th>成交价格</th>
+            <th>呎价</th>
+            <th>地区</th>
+            <th>备注</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="gradeX">
+            <td>Trident</td>
+            <td>Internet
+                Explorer 4.0</td>
+            <td>Win 95+</td>
+            <td class="center hidden-phone">4</td>
+            <td class="center hidden-phone">X</td>
+            <td class="center hidden-phone">4</td>
+            <td class="center hidden-phone">X</td>
+        </tr>
+        
+        </tbody>
+        <tfoot>
+        <tr>
+            <th>楼盘</th>
+            <th>楼层座期</th>
+            <th>成交时间</th>
+            <th>成交价格</th>
+            <th>呎价</th>
+            <th>地区</th>
+            <th>备注</th>
+        </tr>
+        </tfoot>
+        </table>
+        </div>
+        </div>
+        </section>
+        </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block script %}
+<!--script src="static/js/morris-chart/morris.init.js"></script-->
+<!--dynamic table-->
+<script type="text/javascript" language="javascript" src="/static/js/advanced-datatable/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/static/js/data-tables/DT_bootstrap.js"></script>
+<script src="/static/js/zhongyuan_query/query.js"></script>
+<script type="text/javascript">
+{% autoescape off %}
+
+{% endautoescape %}
+</script>
+{% endblock %}
