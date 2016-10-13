@@ -18,8 +18,11 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('statistic.urls')),
     url(r'^stat/', include('statistic.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^new_residences/', include('new_residence.urls')),
     url(r'^all_residence_query/', include('all_residence_query.urls')),
+    url(r'^zhongyuan_query/', include('zhongyuan_query.urls')),
+    url(r'^dsf_stat/', include('dsf_stat.urls')),
 ]

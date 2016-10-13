@@ -55,4 +55,12 @@ class ZhongyuanItem(scrapy.Item):
     # ... other item fields ...
     path = scrapy.Field()
     url = scrapy.Field()
+
+class DsfItem(scrapy.Item):
+    # ... other item fields ...
+    remark = scrapy.Field()
+    date = scrapy.Field()
+    insert_date = scrapy.Field()
+    total_stat = scrapy.Field()
+    detail_stat = scrapy.Field()
     

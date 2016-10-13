@@ -20,36 +20,6 @@
           xhr.setRequestHeader("X-CSRFToken", csrftoken); 
       }
     });
-    $.getJSON('/get_stations/', function(json){
-        var ul = jQuery('#station-ul').text("")
-        $.each(json, function(i, field){
-          //console.log(field)
-          //console.log(field.stationID, field.stationFullName)
-          if(field.active == true){
-            var button = jQuery('#station-button')
-            button.attr('station-id', field.stationID)
-            button.html(field.stationFullName + '<span class="caret"></span>')
-          }
-          ul.append("<li><a id="+field.stationID+" href=\"#\">"+field.stationFullName+"</a></li>")
-        })
-
-        $("#station-select > ul > li > a").click(function(){ 
-          //event.stopPropagation();
-          console.log("station-select ul li a")
-          var id = jQuery(this).attr('id')
-          var showName = jQuery(this).text()
-          var button = jQuery('#station-select > button')
-          button.attr('station-id', id)
-          button.html(showName + '<span class="caret"></span>')
-          $.post('/change_station/', {stationID:id, stationFullName:showName}, function(result){
-            if(result == 'success'){
-              window.location.reload();
-              //console.log('success')
-            }
-          })
-          //console.log(showName)
-        })
-      })
 
     //$("#station-button").click(function(){
       

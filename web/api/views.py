@@ -4,12 +4,15 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from statistic.models import ResidenceNumByDayModel
 from new_residence.models import NewAddResidenceModel, AllResidenceModel
+from zhongyuan_query.models import ZhongyuanModel
+from dsf_stat.models import DsfRawModel
 from django.shortcuts import render
 from bson import json_util
 
 from datetime import datetime, timedelta
 import json
 import math
+import urlparse
 
 # Create your views here.
 def get_residence_num(request):
@@ -138,3 +141,68 @@ def all_residence_query(request):
         item['price_history'] = r.price_history
         ret_dict['data'].append(item)
     return HttpResponse(json.dumps(ret_dict, default = json_util.default))
+
+def zhongyuan_query(request):
+    ret_dict = {'errorno':0, 'data':[]}
+    try:
+        query_params = json.loads(request.GET.get('params'))
+        print query_params
+        result = ZhongyuanModel.objects(__raw__=query_params).order_by('date_beg')
+        for res in result:
+            ret_dict['data'].append(json.loads(res.to_json()))
+    except Exception as e:
+        ret_dict['errorno'] = 1
+        ret_dict['errormsg'] = repr(e)
+        return HttpResponse(json.dumps(ret_dict))
+
+    return HttpResponse(json.dumps(ret_dict, default = json_util.default))
+
+def gen_date(date_beg, date_end):
+    year_beg = int(date_beg[0:4])
+    month_beg = int(date_beg[4:6]) - 1
+
+    d_beg = date_beg
+    d_end = date_end
+    while(d_beg <= d_end):
+        yield d_beg
+        month_beg = (month_beg + 1) % 12
+        if month_beg == 0:
+            year_beg += 1
+        d_beg = '%s%02d' % (year_beg, month_beg + 1)
+
+def dsf_total_volumn_price_query(request):
+    ret_dict = {'errorno':0, 'data':[]}
+    target = request.GET.get('query', 'volumn')
+
+    now = datetime.now()
+    date_beg = now - timedelta(days = 365 * 6)
+    date_beg_str = date_beg.strftime('%Y%m')
+    print date_beg_str
+    
+    records = DsfRawModel.objects(__raw__={'date':{"$gte":date_beg_str}}).order_by('-date')
+    records_dict = {}
+    for r in records:
+        records_dict[r['date']] = r
+
+    ret = []
+    for date in gen_date(date_beg_str, records[0].date):
+        date_beg_format_inner = date
+        if date_beg_format_inner in records_dict:
+            r = records_dict[date_beg_format_inner]
+            item = {}
+            item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
+            item['total'] = r.total_stat[3][target] if r.total_stat[3][target] else 0
+            item['macau'] = r.total_stat[0][target] if r.total_stat[0][target] else 0
+            item['taipa'] = r.total_stat[1][target] if r.total_stat[1][target] else 0
+            item['coloane'] = r.total_stat[2][target] if r.total_stat[2][target] else 0
+        else:
+            item = {}
+            item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
+            item['total'] = 0
+            item['macau'] = 0
+            item['taipa'] = 0
+            item['coloane'] = 0
+        
+        ret.append(item)
+        
+    return HttpResponse(json.dumps(ret))

@@ -38,7 +38,7 @@ var morrisResidenceNumNew = Morris.Line({
 
     function get_residence_num_new(){
         $.getJSON('/api/get_residence_num_new', function(json){
-            console.log(json)
+            //console.log(json)
             morrisResidenceNumNew.setData(json)
         })
     }

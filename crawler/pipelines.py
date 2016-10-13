@@ -10,7 +10,7 @@ from scrapy.conf import settings
 from scrapy.exceptions import DropItem
 from datetime import datetime
 from scrapy.pipelines.images import ImagesPipeline
-from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem, ZhongyuanItem
+from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem, ZhongyuanItem, DsfItem
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -226,3 +226,34 @@ class ZhongyuanPipeline(object):
             return self.process_pdf(item)
         else:
             return item
+
+class DsfPipeline(object):
+    def __init__(self):
+        self.server = settings['MONGODB_SERVER']
+        self.port = settings['MONGODB_PORT']
+        self.db = settings['MONGODB_DB']
+        #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
+        connection = pymongo.MongoClient(self.server, self.port)
+        self.db = connection[self.db]   
+        self.collection = self.db[settings['MONGODB_COLLECTION_DSF']]
+        self.collection_raw = self.db[settings['MONGODB_COLLECTION_DSF_RAW']]
+        
+    def process_dsf(self, item):
+        try:
+            #print item
+            print 'process dsf'
+            self.collection_raw.update_one({'date':item['date']}, {'$set':dict(item)}, upsert = True)
+            #item['_id'] = int(item['_id'])
+            #self.collection.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
+        except Exception as e:
+            #print '#' * 100
+            logging.error(repr(e))
+            print e
+        #log.msg('ok', level = log.DEBUG, spider=spider)
+        return item
+
+    def process_item(self, item, spider):
+        if isinstance(item, DsfItem):
+            return self.process_dsf(item)
+        return item
+        

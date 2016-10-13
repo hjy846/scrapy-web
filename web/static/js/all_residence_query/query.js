@@ -9,7 +9,7 @@ $(function(){
     function query_residence(page){
         jQuery('#query_button').attr('disabled', 'disabled')
         query_info = jQuery('#query_info').val()
-        console.log(query_info)
+        //console.log(query_info)
         query_page = page
         url = "/api/all_residence_query?page=" + query_page
         //data = JSON.parse(query_info)
