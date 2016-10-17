@@ -6,29 +6,35 @@ from django.shortcuts import render
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def total(request):
     records = NewAddResidenceModel.objects(__raw__ = {'date':{'$gt':'2016-09-25'}}).only('date', 'total').order_by('date')[0:2]
     for r in records:
     	print r.date
     	#print r.total
-    return render(request, 'new_residence/total.html', {'username':'hjy846'})
+    username = request.user.username
+    return render(request, 'new_residence/total.html', {'username':username})
  
+@login_required
 def macau(request):
 
     #records = NewAddResidenceModel.objects
+    username = request.user.username
+    return render(request, 'new_residence/macau.html', {'username':username})
 
-    return render(request, 'new_residence/macau.html', {'username':'hjy846'})
-
+@login_required
 def taipa(request):
 
     #records = NewAddResidenceModel.objects
+    username = request.user.username
+    return render(request, 'new_residence/taipa.html', {'username':username})
 
-    return render(request, 'new_residence/taipa.html', {'username':'hjy846'})
-
+@login_required
 def coloane(request):
 
     #records = NewAddResidenceModel.objects
-    
-    return render(request, 'new_residence/coloane.html', {'username':'hjy846'})
+    username = request.user.username
+    return render(request, 'new_residence/coloane.html', {'username':username})

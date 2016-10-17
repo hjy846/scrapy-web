@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from . import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -25,4 +26,7 @@ urlpatterns = [
     url(r'^all_residence_query/', include('all_residence_query.urls')),
     url(r'^zhongyuan_query/', include('zhongyuan_query.urls')),
     url(r'^dsf_stat/', include('dsf_stat.urls')),
+    url(r'^accounts/login/',views.login),
+    url(r'^accounts/logout/',views.logout),
+    url(r'^404/', views.page404),
 ]

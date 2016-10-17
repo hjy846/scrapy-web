@@ -13,8 +13,10 @@ from datetime import datetime, timedelta
 import json
 import math
 import urlparse
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def get_residence_num(request):
     now = datetime.now()
     date_beg = now - timedelta(days = 30)
@@ -42,7 +44,7 @@ def get_residence_num(request):
         date_beg += timedelta(days = 1)
     return HttpResponse(json.dumps(ret))
 
-
+@login_required
 def get_residence_num_new(request):
     now = datetime.now()
     date_beg = now - timedelta(days = 30)
@@ -71,27 +73,28 @@ def get_residence_num_new(request):
         date_beg += timedelta(days = 1)
     return HttpResponse(json.dumps(ret))
 
+@login_required
 def get_new_residence_total(request):
     region = 'total'
     
     result = get_yesterday_new_residence(region)
     #print len(result)
     return HttpResponse(json.dumps(result, default = json_util.default))
-
+@login_required
 def get_new_residence_macau(request):
     region = u'澳門'
     
     result = get_yesterday_new_residence(region)
     #print len(result)
     return HttpResponse(json.dumps(result, default = json_util.default))
-
+@login_required
 def get_new_residence_taipa(request):
     region = u'氹仔'
     
     result = get_yesterday_new_residence(region)
     #print len(result)
     return HttpResponse(json.dumps(result, default = json_util.default))
-
+@login_required
 def get_new_residence_coloane(request):
     region = u'路環'
     
@@ -117,7 +120,8 @@ def get_new_residence(region, date_beg):
     for r in result:
         ret.append(dict(r.info))
     return ret
-
+    
+@login_required
 def all_residence_query(request):
     ret_dict = {'errorno':0, 'data':[], 'total':0}
     try:
@@ -141,7 +145,7 @@ def all_residence_query(request):
         item['price_history'] = r.price_history
         ret_dict['data'].append(item)
     return HttpResponse(json.dumps(ret_dict, default = json_util.default))
-
+@login_required
 def zhongyuan_query(request):
     ret_dict = {'errorno':0, 'data':[]}
     try:
@@ -170,6 +174,7 @@ def gen_date(date_beg, date_end):
             year_beg += 1
         d_beg = '%s%02d' % (year_beg, month_beg + 1)
 
+@login_required
 def dsf_total_volumn_price_query(request):
     ret_dict = {'errorno':0, 'data':[]}
     target = request.GET.get('query', 'volumn')

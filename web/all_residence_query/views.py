@@ -8,7 +8,10 @@ from bson import json_util
 
 from datetime import datetime, timedelta
 import json
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def query(request):
-    return render(request, 'all_residence_query/query.html', {'username':'hjy846'})
+    username = request.user.username
+    return render(request, 'all_residence_query/query.html', {'username':username})

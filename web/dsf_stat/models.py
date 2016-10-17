@@ -13,5 +13,6 @@ class DsfRawModel(Document):
     detail_stat = ListField()
     total_stat = ListField()
     remark = StringField()
+    stat_type = StringField()
     insert_date = DateTimeField()
     meta = {'collection':"dsf_raw"}
