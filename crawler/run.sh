@@ -14,3 +14,4 @@ scrapy crawl residence_image --logfile=${save_path}/running_${running_date}.log 
 python scripts/preprocess.py yesterday >>${save_path}/log
 
 scrapy crawl centaline --logfile=${save_path}/running_${running_date}.log >>${save_path}/log
+scrapy crawl dsf -s DOWNLOAD_TIMEOUT=1800 --logfile=${save_path}/running_${running_date}.log >>${save_path}/log

@@ -235,14 +235,23 @@ class DsfPipeline(object):
         #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
         connection = pymongo.MongoClient(self.server, self.port)
         self.db = connection[self.db]   
-        self.collection = self.db[settings['MONGODB_COLLECTION_DSF']]
+        #self.collection = self.db[settings['MONGODB_COLLECTION_DSF']]
         self.collection_raw = self.db[settings['MONGODB_COLLECTION_DSF_RAW']]
+        self.collection_xianlou_raw = self.db[settings['MONGODB_COLLECTION_DSF_XIANLOU_RAW']]
+        self.collection_louhua_raw = self.db[settings['MONGODB_COLLECTION_DSF_LOUHUA_RAW']]
         
     def process_dsf(self, item):
         try:
             #print item
             print 'process dsf'
-            self.collection_raw.update_one({'date':item['date']}, {'$set':dict(item)}, upsert = True)
+            #統計樓花
+            if item['stat_type'] == '2':
+                print 'stat type 2'
+                self.collection_louhua_raw.update_one({'date':item['date']}, {'$set':dict(item)}, upsert = True)
+            elif item['stat_type'] == '1':
+                self.collection_xianlou_raw.update_one({'date':item['date']}, {'$set':dict(item)}, upsert = True)
+            elif item['stat_type'] == '0':
+                self.collection_raw.update_one({'date':item['date']}, {'$set':dict(item)}, upsert = True)
             #item['_id'] = int(item['_id'])
             #self.collection.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
         except Exception as e:

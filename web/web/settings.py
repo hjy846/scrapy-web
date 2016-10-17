@@ -124,5 +124,5 @@ STATICFILES_DIRS = (
 )
 
 MONGO_PORT = 8888
-MONGO_DB = 'residence_test'
+MONGO_DB = 'residence'
 MONGO_DB_RAW = 'residence_raw'

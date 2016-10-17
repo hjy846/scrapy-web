@@ -1,3 +1,5 @@
+#! -*- encoding:utf-8 -*-
+
 import scrapy
 from scrapy.contrib.pipeline.images import ImagesPipeline
 
@@ -63,4 +65,6 @@ class DsfItem(scrapy.Item):
     insert_date = scrapy.Field()
     total_stat = scrapy.Field()
     detail_stat = scrapy.Field()
+    #0統計全部 1統計現樓 2統計樓花
+    stat_type = scrapy.Field()
     
