@@ -14,11 +14,11 @@ class CentalineSpider(scrapy.Spider):
     save_path = './output/zhongyuan'
 
     def parse(self, response):
-        return self.get_download_url(response)
+        return self.parse_list(response)
 
     def parse_list(self, response):
-        for sel in response.xpath('//form[@name="article"]/select/option/@value'):
-            url = "http://www.centaline-macau.com/icms/template.aspx?series=%s" % sel.extract()
+        for sel in response.xpath('//form[@name="article"]/select/option/@value')[0:2].extract():
+            url = "http://www.centaline-macau.com/icms/template.aspx?series=%s" % sel
             yield scrapy.Request(url, self.get_download_url)
 
     def get_download_url(self, response):

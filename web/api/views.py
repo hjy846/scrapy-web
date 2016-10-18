@@ -120,7 +120,7 @@ def get_new_residence(region, date_beg):
     for r in result:
         ret.append(dict(r.info))
     return ret
-    
+
 @login_required
 def all_residence_query(request):
     ret_dict = {'errorno':0, 'data':[], 'total':0}
@@ -145,6 +145,7 @@ def all_residence_query(request):
         item['price_history'] = r.price_history
         ret_dict['data'].append(item)
     return HttpResponse(json.dumps(ret_dict, default = json_util.default))
+    
 @login_required
 def zhongyuan_query(request):
     ret_dict = {'errorno':0, 'data':[]}

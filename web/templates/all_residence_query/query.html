@@ -3,7 +3,7 @@
 {% block title %}Residence Macau{% endblock %}
 
 {% block stylesheet %}
-
+<link rel="stylesheet" href="/static/js/morris-chart/morris.css">
 {% endblock %}
 
 {% block content %}
@@ -26,6 +26,10 @@
                 
             </div>
     </section>
+    
+    <div id=result>
+		
+    </div>
     <div>
         <ul id="query_pagination" class="pagination pagination-lg hidden" >
             <li><a>«</a></li>
@@ -33,18 +37,17 @@
             <li><a>»</a></li>
         </ul>
     </div>
-    <div id=result>
-		
-    </div>
-    
 </div>
 {% endblock %}
 
 {% block script %}
 <!--script src="static/js/morris-chart/morris.init.js"></script-->
 <!--dynamic table-->
-
+<script src="/static/js/morris-chart/morris.js"></script>
+<script src="/static/js/morris-chart/raphael-min.js"></script>
 <script src="/static/js/all_residence_query/query.js"></script>
+<!--script src="/static/js/flot.chart.init.js"></script-->
+
 <script type="text/javascript">
 {% autoescape off %}
 
