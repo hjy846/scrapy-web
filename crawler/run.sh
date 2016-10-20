@@ -7,6 +7,7 @@ then
     mkdir $save_path
 fi
 
+
 scrapy crawl residence --logfile=${save_path}/running_${running_date}.log -a crawl_date=yesterday -a region=taipa >>${save_path}/log
 scrapy crawl residence --logfile=${save_path}/running_${running_date}.log -a crawl_date=yesterday -a region=macau >>${save_path}/log
 scrapy crawl residence --logfile=${save_path}/running_${running_date}.log -a crawl_date=yesterday -a region=coloane >>${save_path}/log
