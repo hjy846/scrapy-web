@@ -53,7 +53,8 @@ def find_new_residences():
         #替换image url
 
         save_record = {'info':r, 'update_time':datetime.now(), 'price_history.%s' % r['update_time']:r['price']}
-        if COLLECTION.find_one({'_id':_id}) == None:
+        #print save_record
+        if COLLECTION.find_one({'_id':_id, 'first_release_time':{'$lt':PARAMS['crawl_date']}}) == None:
             r['create_time'] = datetime.now()
             save_record['create_time'] = datetime.now()
             save_record['first_release_time'] = r['update_time']
@@ -65,7 +66,8 @@ def find_new_residences():
                     region = 'taipa'
                 elif r['region'] == u'路環':
                     region = 'coloane'
-                COLLECTION_NEW_ADD.update({'date':PARAMS['crawl_date']}, {"$push":{region:r, 'total':r}}, upsert = True)
+                print '%s.%s' % (region, _id)
+                COLLECTION_NEW_ADD.update({'date':PARAMS['crawl_date']}, {"$set":{'%s.%s' % (region, _id):r, '%s.%s' % ('total', _id):r}}, upsert = True)
             except Exception as e:
                 print e
 
@@ -93,10 +95,10 @@ def stat_region_data():
     new_add = COLLECTION_NEW_ADD.find_one({'date':PARAMS['crawl_date']})
     #print new_add
     if new_add:
-        result['taipa_new'] = len(new_add.get(u'taipa', []))
-        result['macau_new'] = len(new_add.get(u'macau', []))
-        result['coloane_new'] = len(new_add.get(u'coloane', []))
-        result['total_new'] = len(new_add.get('total', []))
+        result['taipa_new'] = len(new_add.get(u'taipa', {}))
+        result['macau_new'] = len(new_add.get(u'macau', {}))
+        result['coloane_new'] = len(new_add.get(u'coloane', {}))
+        result['total_new'] = len(new_add.get('total', {}))
     else:
         result['taipa_new'] = 0
         result['macau_new'] = 0

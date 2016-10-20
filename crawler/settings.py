@@ -93,11 +93,11 @@ IMAGES_EXPIRES = 3650
 MONGODB_SERVER='127.0.0.1'
 MONGODB_PORT=8888
 
-MONGODB_DB_RAW='residence_raw_test'
+MONGODB_DB_RAW='residence_raw_hour'
 MONGODB_COLLECTION_ALL_RESIDENCES='all_residences'
 MONGODB_COLLECTION_IMAGE='image_info'
 
-MONGODB_DB='residence_test'
+MONGODB_DB='residence_hour'
 MONGODB_COLLECTION_NEW_ADD='new_add_residences'
 MONGODB_COLLECTION_RESIDENCE_NUM_BY_DAY='residence_num_by_day'
 MONGODB_COLLECTION_ZHONGYUAN='zhongyuan'
@@ -106,7 +106,7 @@ MONGODB_COLLECTION_DSF_RAW='dsf_raw'
 MONGODB_COLLECTION_DSF_XIANLOU_RAW='dsf_xianlou_raw'
 MONGODB_COLLECTION_DSF_LOUHUA_RAW='dsf_louhua_raw'
 
-GO_NEXT=False
+GO_NEXT=True
 DOWNLOAD_TIMEOUT=30
 
 INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=10&page=1"

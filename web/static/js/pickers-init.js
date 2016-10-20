@@ -44,7 +44,8 @@ $(function(){
     var checkin = $('.dpd1').datepicker({
         onRender: function(date) {
             return date.valueOf() < now.valueOf() ? 'disabled' : '';
-        }
+        },
+        format: 'yyyy-mm-dd'
     }).on('changeDate', function(ev) {
             if (ev.date.valueOf() > checkout.date.valueOf()) {
                 var newDate = new Date(ev.date)
@@ -57,7 +58,8 @@ $(function(){
     var checkout = $('.dpd2').datepicker({
         onRender: function(date) {
             return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
-        }
+        },
+        format: 'yyyy-mm-dd'
     }).on('changeDate', function(ev) {
             checkout.hide();
         }).data('datepicker');

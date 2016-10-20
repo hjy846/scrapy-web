@@ -105,6 +105,6 @@ MONGODB_COLLECTION_IMAGE='image_info'
 GO_NEXT=True
 DOWNLOAD_TIMEOUT=30
 
-INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=10&page=1"
+INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=60&page=1"
 START_URL="http://www.malimalihome.net"
 

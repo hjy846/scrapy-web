@@ -27,7 +27,7 @@ def get_residence_num(request):
     for r in records:
         records_dict[r['date']] = r
     ret = []
-    while date_beg < now:
+    while date_beg <= now:
         date_beg_format_inner = date_beg.strftime("%Y-%m-%d")
         if date_beg_format_inner in records_dict:
             r = records_dict[date_beg_format_inner]
@@ -55,7 +55,7 @@ def get_residence_num_new(request):
     for r in records:
         records_dict[r['date']] = r
     ret = []
-    while date_beg < now:
+    while date_beg <= now:
         date_beg_format_inner = date_beg.strftime("%Y-%m-%d")
         if date_beg_format_inner in records_dict:
             r = records_dict[date_beg_format_inner]
@@ -75,9 +75,13 @@ def get_residence_num_new(request):
 
 @login_required
 def get_new_residence_total(request):
-    region = 'total'
+    now = datetime.now()
+    yesterday = now - timedelta(days=1)
+    region = request.GET.get('region', 'all')
+    date_beg = request.GET.get('from', yesterday.strftime('%Y-%m-%d'))
+    date_end = request.GET.get('to', now.strftime('%Y-%m-%d'))
     
-    result = get_yesterday_new_residence(region)
+    result = get_yesterday_new_residence(region, date_beg, date_end)
     #print len(result)
     return HttpResponse(json.dumps(result, default = json_util.default))
 @login_required
@@ -102,20 +106,22 @@ def get_new_residence_coloane(request):
     #print len(result)
     return HttpResponse(json.dumps(result, default = json_util.default))
 
-def get_yesterday_new_residence(region):
-    now = datetime.now()
-    date_beg = now - timedelta(days = 1)
-    date_beg_str = date_beg.strftime('%Y-%m-%d')
-    result = get_new_residence(region, date_beg_str)
+def get_yesterday_new_residence(region, date_beg, date_end):
+    result = get_new_residence(region, date_beg, date_end)
     return result
 
-def get_new_residence(region, date_beg):
-    query_param = {'first_release_time':{'$gte':date_beg}}
+def get_new_residence(region, date_beg, date_end):
+    query_param = {'first_release_time':{'$gte':date_beg, '$lte':date_end}}
 
-    if region != 'total':
-        query_param['info.region'] = region
+    if region == 'macau':
+        query_param['info.region'] = u'澳門'
+    elif region == 'taipa':
+        query_param['info.region'] = u'氹仔'
+    elif region == 'coloane':
+        query_param['info.region'] = u'路環'
 
     result = AllResidenceModel.objects(__raw__ = query_param)
+    
     ret = []
     for r in result:
         ret.append(dict(r.info))
