@@ -22,5 +22,6 @@ class AllResidenceModel(Document):
     update_time = DateTimeField()
     first_release_time = StringField()
     price_history = ListField()
+    image_list_new = ListField()
     info = DictField()
     meta = {'collection':"all_residences"}
