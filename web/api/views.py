@@ -84,6 +84,7 @@ def get_new_residence_total(request):
     result = get_yesterday_new_residence(region, date_beg, date_end)
     #print len(result)
     return HttpResponse(json.dumps(result, default = json_util.default))
+
 @login_required
 def get_new_residence_macau(request):
     region = u'澳門'
@@ -124,7 +125,14 @@ def get_new_residence(region, date_beg, date_end):
     
     ret = []
     for r in result:
-        ret.append(dict(r.info))
+        ret_dict = dict(r.info)
+        if 'image_list_new' in r:
+            ret_dict['image_list'] = r['image_list_new']
+            print ret_dict['_id'], ret_dict['building']
+            print ret_dict['image_list']
+        if len(ret_dict['image_list']):
+            ret_dict['building_name'] = u'%s (%s图)' % (ret_dict['building_name'], len(ret_dict['image_list']))
+        ret.append(ret_dict)
     return ret
 
 @login_required
@@ -147,7 +155,10 @@ def all_residence_query(request):
         return HttpResponse(json.dumps(ret_dict))
 
     for r in result:
+        print r
         item = r.info
+        if 'image_list_new' in r:
+            item['image_list'] = r['image_list_new']
         item['price_history'] = r.price_history
         ret_dict['data'].append(item)
     return HttpResponse(json.dumps(ret_dict, default = json_util.default))

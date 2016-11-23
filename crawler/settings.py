@@ -68,7 +68,7 @@ ITEM_PIPELINES = {
     'scrapy.pipelines.images.ImagesPipeline': 1
 }
 
-IMAGES_STORE = './images'
+IMAGES_STORE = '../web/static/residence_images/'
 IMAGES_EXPIRES = 3650
 
 # Enable and configure the AutoThrottle extension (disabled by default)

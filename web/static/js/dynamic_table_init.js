@@ -18,12 +18,12 @@ function fnFormatDetails ( oTable, nTr )
         sOut += '</ol>\
                             <div class="carousel-inner">\
                                 <div class="item text-center active">\
-                                    <img src="' + aData[10][0] + '", width=250, height=250 >\
+                                    <img src="' + aData[10][0] + '" style="width:250px;height:250px">\
                                 </div>'
 
         for(var i = 1; i < aData[10].length; ++i){
             sOut += '<div class="item text-center">\
-                                    <img src="' + aData[10][i] + '", width=250, height=250 >\
+                                    <img src="' + aData[10][i] + '" style="width:250px;height:250px">\
                                 </div>'
         } 
         sOut += '</div>\
@@ -78,6 +78,7 @@ $(document).ready(function() {
      * rather it is done here
      */
     $(document).on('click','#hidden-table-info tbody td img',function () {
+        console.log('table click')
         var nTr = $(this).parents('tr')[0];
         if ( oTable.fnIsOpen(nTr) )
         {
