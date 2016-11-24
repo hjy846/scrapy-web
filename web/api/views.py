@@ -126,7 +126,7 @@ def get_new_residence(region, date_beg, date_end):
     ret = []
     for r in result:
         ret_dict = dict(r.info)
-        if 'image_list_new' in r:
+        if 'image_list_new' in r and len(r['image_list_new']):
             ret_dict['image_list'] = r['image_list_new']
             print ret_dict['_id'], ret_dict['building']
             print ret_dict['image_list']
