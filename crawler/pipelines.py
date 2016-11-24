@@ -60,7 +60,9 @@ class ResidencePipeline(object):
     def process_detail(self, item):
         try:
             item['_id'] = int(item['_id'])
-            self.collection.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
+            update_item = dict(item)
+            del update_item['_id']
+            self.collection.update_one({'_id':item['_id']}, {'$set':update_item}, upsert = True)
         except Exception as e:
             #print '#' * 100
             logging.error(repr(e))
