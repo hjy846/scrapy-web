@@ -5,27 +5,51 @@
 {% block stylesheet %}
 <link href="/static/js/advanced-datatable/css/demo_table.css" rel="stylesheet" />
 <link rel="stylesheet" href="/static/js/data-tables/DT_bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="/static/js/bootstrap-datepicker/css/datepicker-custom.css" />
+<link rel="stylesheet" type="text/css" href="/static/js/bootstrap-daterangepicker/daterangepicker-bs3.css" />
 {% endblock %}
 
 {% block content %}
 <div class="wrapper">
     <section class="panel">
             <header class="panel-heading">
-                查詢語句：
+                查詢：
             </header>
             <div class="panel-body">
-                <form method="get" class="form-horizontal bucket-form">
-                    <div class="form-group">
-                        
-                        <div class="col-sm-10">
-                            <textarea rows="6" class="form-control" id="query_info">{"building":"鴻發花園", "update_time":{"$gt":"2014-09-20"}}</textarea>
-                        </div>
+                        <form class="form-inline">
+                            <div class="btn-group">
+                                <label>楼宇名称：</label>
+                                <input type="text" class="form-control" name="building" id="building" value="鴻發花園">
+                            </div><!-- /btn-group -->
+                            <div class="form-group">
+                                <label  for="date_beg">日期：</label>
+                                <!--input type="text" class="form-control default-date-picker" id="date_beg" placeholder=""-->
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group input-large custom-date-range" data-date="2013-01-01" data-date-format="yyyy-mm-dd" style="width:300px">
+                                    <input type="text" class="form-control dpd1" name="from" value="{{date_beg}}">
+                                    <span class="input-group-addon">To</span>
+                                    <input type="text" class="form-control dpd2" name="to" value="{{date_end}}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword2">区域：</label>
+                                <!--input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password"-->
+                            </div>
+                            <div class="btn-group">
+                                <button data-toggle="dropdown" type="button" class="btn btn-default dropdown-toggle" id="dropdown-region" region="all">
+                                    All  <span class="caret"></span>
+                                </button>
+                                <ul role="menu" class="dropdown-menu">
+                                    <li><a href="#" region="all">All</a></li>
+                                    <li><a href="#" region="澳門">澳門</a></li>
+                                    <li><a href="#" region="氹仔">氹仔</a></li>
+                                </ul>
+                            </div><!-- /btn-group -->
+                            <button class="btn btn-success" type="button" id="query_button">Query</button>
+                        </form>
 
                     </div>
-                    <div><button class="btn btn-success" type="button" id="query_button">Query</button></div>
-                </form>
-                
-            </div>
     </section>
 
     <div id=result class="hidden">
@@ -93,6 +117,11 @@
 <!--dynamic table-->
 <script type="text/javascript" language="javascript" src="/static/js/advanced-datatable/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="/static/js/data-tables/DT_bootstrap.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-daterangepicker/daterangepicker.js"></script>
+<!--dynamic table initialization -->
+<script src="/static/js/pickers-init.js"></script>
 <script src="/static/js/zhongyuan_query/query.js"></script>
 <script type="text/javascript">
 {% autoescape off %}

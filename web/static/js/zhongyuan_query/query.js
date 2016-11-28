@@ -12,12 +12,18 @@ $(function(){
     } );
 
     jQuery('#query_button').click(function(){
-        query_info = jQuery('#query_info').val()
+        //query_info = jQuery('#query_info').val()
         url = "/api/zhongyuan_query"
         //data = JSON.parse(query_info)
-        data = {'params':query_info}
+        //data = {'params':query_info}
 
+        var region = jQuery('#dropdown-region').attr('region')
+        var building = jQuery('#building').val()
+        var date_beg = jQuery('.custom-date-range .dpd1').val()
+        var date_end = jQuery('.custom-date-range .dpd2').val()
+        data = {"building":building, "date_beg": date_beg, "date_end": date_end, "region":region}
         $.getJSON(url, data, function(json){
+
             if(json.errorno != 0){
                 alert(json.errormsg)
                 jQuery('#query_button').removeAttr('disabled')
@@ -37,7 +43,6 @@ $(function(){
             var oSettings = oTable.fnSettings();
             oTable.fnClearTable();
             var list = json['data'];
-            console.log(list)
             for (var i = 0; i < list.length; i++) {
                 var vo = list[i]
                 if (!vo) {continue;}
@@ -58,5 +63,12 @@ $(function(){
             oTable.fnDraw();
         })
         
+    })
+
+    jQuery('.dropdown-menu li a').click(function(){
+        var val = $(this).html()
+        var region = $(this).attr('region')
+        jQuery('#dropdown-region').html(val + '<span class="caret"></span>')
+        jQuery('#dropdown-region').attr('region', region)
     })
 })

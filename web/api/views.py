@@ -167,7 +167,22 @@ def all_residence_query(request):
 def zhongyuan_query(request):
     ret_dict = {'errorno':0, 'data':[]}
     try:
-        query_params = json.loads(request.GET.get('params'))
+        #query_params = json.loads(request.GET.get('params'))
+        query_params = {}
+        building = request.GET.get('building', '')
+        if building != '':
+            query_params['building'] = building.strip()
+        region = request.GET.get('region', 'all')
+        if region != 'all':
+            query_params['region'] = region
+        date_beg = request.GET.get('date_beg', '')
+        date_end = request.GET.get('date_end', '')
+        if date_beg != '':
+            query_params['update_time'] = {'$gte':date_beg}
+        if date_end != '':
+            if 'update_time' not in query_params:
+                query_params['update_time'] = {}
+            query_params['update_time']['$lte'] = date_end
         print query_params
         result = ZhongyuanModel.objects(__raw__=query_params).order_by('update_time')
         for res in result:
