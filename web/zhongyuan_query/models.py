@@ -11,8 +11,7 @@ connect(settings.MONGO_DB, port = settings.MONGO_PORT)
 class ZhongyuanModel(Document):
     block_floor = StringField()
     building = StringField()
-    date_beg = StringField()
-    date_end = StringField()
+    update_time = StringField()
     market = StringField()
     price = IntField()
     price_per_ft2 = IntField()
@@ -20,4 +19,12 @@ class ZhongyuanModel(Document):
     remark = StringField()
     size = IntField()
     insert_time = DateTimeField()
-    meta = {'collection':"zhongyuan"}
+
+    status = StringField()
+    district = StringField()
+    area = StringField()
+    file_type = StringField()
+    prop_type = StringField()
+    tx_date  = StringField()
+
+    meta = {'collection':"zhongyuan_new"}

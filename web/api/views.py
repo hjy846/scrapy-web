@@ -169,9 +169,10 @@ def zhongyuan_query(request):
     try:
         query_params = json.loads(request.GET.get('params'))
         print query_params
-        result = ZhongyuanModel.objects(__raw__=query_params).order_by('date_beg')
+        result = ZhongyuanModel.objects(__raw__=query_params).order_by('update_time')
         for res in result:
             ret_dict['data'].append(json.loads(res.to_json()))
+        print ret_dict
     except Exception as e:
         ret_dict['errorno'] = 1
         ret_dict['errormsg'] = repr(e)

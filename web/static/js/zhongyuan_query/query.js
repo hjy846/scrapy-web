@@ -31,18 +31,25 @@ $(function(){
             jQuery('#result').removeAttr('class')
             //jQuery('#dynamic-table tbody').empty()
             //console.log(json['data'])
-            var label_key = ["building","block_floor","date_beg","price", "price_per_ft2", "region", "remark"];
+            var label_key = ["building","block_floor","update_time","price", "price_per_ft2", "region", "remark"];
             var table = jQuery('#dynamic-table')
             var oTable = table.dataTable();
             var oSettings = oTable.fnSettings();
             oTable.fnClearTable();
             var list = json['data'];
+            console.log(list)
             for (var i = 0; i < list.length; i++) {
                 var vo = list[i]
                 if (!vo) {continue;}
                 var arr = [];
                 for(var j=0;j<label_key.length;j++){
-                    arr.push(vo[label_key[j]]);
+                    if(!vo.hasOwnProperty(label_key[j])){
+                        arr.push('');
+                    }
+                    else{
+                        arr.push(vo[label_key[j]]);
+                    }
+                    
                 }
                 //console.log(arr)
                 oTable.oApi._fnAddData(oSettings, arr);
