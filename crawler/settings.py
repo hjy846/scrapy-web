@@ -63,7 +63,7 @@ HTTPERROR_ALLOWED_CODES = [100]
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'crawler.pipelines.ResidencePipeline': 300,
-    'crawler.pipelines.ZhongyuanPipeline': 400,
+    'crawler.pipelines.ZhongyuanNewPipeline': 400,
     'crawler.pipelines.DsfPipeline': 200,
     'scrapy.pipelines.images.ImagesPipeline': 1
 }
@@ -101,6 +101,7 @@ MONGODB_DB='residence_hour'
 MONGODB_COLLECTION_NEW_ADD='new_add_residences'
 MONGODB_COLLECTION_RESIDENCE_NUM_BY_DAY='residence_num_by_day'
 MONGODB_COLLECTION_ZHONGYUAN='zhongyuan'
+MONGODB_COLLECTION_ZHONGYUAN_NEW='zhongyuan_new'
 MONGODB_COLLECTION_DSF='dsf'
 MONGODB_COLLECTION_DSF_RAW='dsf_raw'
 MONGODB_COLLECTION_DSF_XIANLOU_RAW='dsf_xianlou_raw'

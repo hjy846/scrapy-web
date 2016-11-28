@@ -58,6 +58,37 @@ class ZhongyuanItem(scrapy.Item):
     path = scrapy.Field()
     url = scrapy.Field()
 
+class ZhongyuanNewItem(scrapy.Item):
+    # ... other item fields ...
+    status = scrapy.Field()
+    #BuiltArea
+    size = scrapy.Field()
+    #Name
+    building = scrapy.Field()
+    #f_area
+    region = scrapy.Field()
+    #
+    area = scrapy.Field()
+    district = scrapy.Field()
+    file_type = scrapy.Field()
+    prop_type = scrapy.Field()
+    #avg_price
+    price_per_ft2 = scrapy.Field()
+    #prop_name
+    block_floor = scrapy.Field()
+    #memo
+    remark = scrapy.Field()
+    #total
+    price = scrapy.Field()
+    #source_from
+    market = scrapy.Field()
+
+    tx_date = scrapy.Field()
+
+    #
+    update_time = scrapy.Field()
+
+
 class DsfItem(scrapy.Item):
     # ... other item fields ...
     remark = scrapy.Field()

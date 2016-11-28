@@ -11,6 +11,7 @@ $(function(){
 var morrisResidenceNum = Morris.Line({
     element: 'graph-area-line',
     behaveLikeLine: false,
+    resize:true,
     data: [
         
     ],
@@ -22,6 +23,7 @@ var morrisResidenceNum = Morris.Line({
 var morrisResidenceNumNew = Morris.Line({
     element: 'graph-area-line-new',
     behaveLikeLine: false,
+    resize:true,
     data: [
         
     ],

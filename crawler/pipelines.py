@@ -10,7 +10,7 @@ from scrapy.conf import settings
 from scrapy.exceptions import DropItem
 from datetime import datetime
 from scrapy.pipelines.images import ImagesPipeline
-from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem, ZhongyuanItem, DsfItem
+from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem, ZhongyuanItem, DsfItem, ZhongyuanNewItem
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -60,9 +60,7 @@ class ResidencePipeline(object):
     def process_detail(self, item):
         try:
             item['_id'] = int(item['_id'])
-            update_item = dict(item)
-            del update_item['_id']
-            self.collection.update_one({'_id':item['_id']}, {'$set':update_item}, upsert = True)
+            self.collection.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
         except Exception as e:
             #print '#' * 100
             logging.error(repr(e))
@@ -268,3 +266,29 @@ class DsfPipeline(object):
             return self.process_dsf(item)
         return item
         
+
+class ZhongyuanNewPipeline(object):
+    def __init__(self):
+        self.server = settings['MONGODB_SERVER']
+        self.port = settings['MONGODB_PORT']
+        self.db = settings['MONGODB_DB']
+        #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
+        connection = pymongo.MongoClient(self.server, self.port)
+        self.db = connection[self.db]   
+        self.collection = self.db[settings['MONGODB_COLLECTION_ZHONGYUAN_NEW']]
+        
+    def _process_item(self, item):
+        update_item = dict(item)
+        res = self.collection.find_one(dict(item))
+        if res == None:
+            update_item['insert_time'] = datetime.now()
+            self.collection.insert(update_item)
+
+    def process_item(self, item, spider):
+        #print '#@**' * 100
+        #print item
+        #print type(item)
+        if isinstance(item, ZhongyuanNewItem):
+            return self._process_item(item)
+        else:
+            return item

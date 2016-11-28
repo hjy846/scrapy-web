@@ -16,7 +16,8 @@ var morrisResidenceNum = Morris.Line({
     ],
     xkey: 'date',
     ykeys: ['total', 'macau', 'taipa', 'coloane'],
-    labels: ['total', 'macau', 'taipa', 'coloane']
+    labels: ['total', 'macau', 'taipa', 'coloane'],
+    resize:true
 });
 
 var morrisResidenceNumNew = Morris.Line({
@@ -27,7 +28,8 @@ var morrisResidenceNumNew = Morris.Line({
     ],
     xkey: 'date',
     ykeys: ['total_new', 'macau_new', 'taipa_new', 'coloane_new'],
-    labels: ['total_new', 'macau_new', 'taipa_new', 'coloane_new']
+    labels: ['total_new', 'macau_new', 'taipa_new', 'coloane_new'],
+    resize:true
 });
 
     function get_residence_num(){
