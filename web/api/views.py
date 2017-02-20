@@ -2,7 +2,7 @@
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from statistic.models import ResidenceNumByDayModel
+from statistic.models import ResidenceNumByDayModel, PriceTrendByMonthModel
 from new_residence.models import NewAddResidenceModel, AllResidenceModel
 from zhongyuan_query.models import ZhongyuanModel
 from dsf_stat.models import DsfRawModel, DsfXianlouModel, DsfLouhuaModel
@@ -368,4 +368,51 @@ def dsf_louhua_volumn_price_query(request):
             continue
         ret.append(item)
         
+    return HttpResponse(json.dumps(ret))
+
+@login_required
+def get_residence_num_by_month(request):
+    records = PriceTrendByMonthModel.objects(__raw__={}).order_by('date')
+    ret = []
+    for r in records:
+        item = {}
+        item['date'] = r.date
+        item['total'] = r.total if r.total else 0
+        item['macau'] = r.total_macau if r.total_macau else 0
+        item['taipa'] = r.total_taipa if r.total_taipa else 0
+        item['coloane'] = r.total_coloane if r.total_coloane else 0
+        ret.append(item)
+    
+    return HttpResponse(json.dumps(ret))
+
+@login_required
+def get_new_residence_num_by_month(request):
+    records = PriceTrendByMonthModel.objects(__raw__={}).order_by('date')
+    ret = []
+    for r in records:
+        item = {}
+        item['date'] = r.date
+        item['new'] = r.new if r.new else 0
+        item['new_macau'] = r.new_macau if r.new_macau else 0
+        item['new_taipa'] = r.new_taipa if r.new_taipa else 0
+        item['new_coloane'] = r.new_coloane if r.new_coloane else 0
+        ret.append(item)
+    
+    return HttpResponse(json.dumps(ret))
+
+@login_required
+def get_up_down_num_by_month(request):
+    records = PriceTrendByMonthModel.objects(__raw__={}).order_by('date')
+    ret = []
+    for r in records:
+        item = {}
+        item['date'] = r.date
+        item['up_macau'] = r.up_macau if r.up_macau else 0
+        item['up_taipa'] = r.up_taipa if r.up_taipa else 0
+        item['up_coloane'] = r.up_coloane if r.up_coloane else 0
+        item['down_macau'] = r.down_macau if r.down_macau else 0
+        item['down_taipa'] = r.down_taipa if r.down_taipa else 0
+        item['down_coloane'] = r.down_coloane if r.down_coloane else 0
+        ret.append(item)
+    
     return HttpResponse(json.dumps(ret))

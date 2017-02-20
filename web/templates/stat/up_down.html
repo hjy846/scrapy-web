@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Residence Macau{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <div class="row">
+        <div class="col-sm-12">
+                    <section class="panel">
+                        <header class="panel-heading">
+                            漲跌情況
+                        <span class="tools pull-right">
+                            <a href="javascript:;" class="fa fa-chevron-down"></a>
+                            <a href="javascript:;" class="fa fa-times"></a>
+                         </span>
+                        </header>
+                        <div class="panel-body">
+                            <div id="container"></div>
+                        </div>
+                    </section>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="/static/js/stat/stat_up_down.js"></script>
+<!--script src="static/js/morris-chart/morris.init.js"></script-->
+<script type="text/javascript">
+{% autoescape off %}
+// Use Morris.Area instead of Morris.Line
+
+{% endautoescape %}
+</script>
+{% endblock %}

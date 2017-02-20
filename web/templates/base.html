@@ -76,8 +76,9 @@
                 <li class="{% if is_index %}active{% endif %}"><a href="/stat/index"><i class="fa fa-home"></i> <span>首页</span></a></li>
                 <li class="menu-list {% if stat_residence_num %}nav-active{%endif%}"><a href=""><i class="fa fa-laptop"></i> <span>统计</span></a>
                     <ul class="sub-menu-list">
-                        <li {% if stat_residence_num %}class="active"{%endif%}><a href="/stat/index">放盘数量</a></li>
-                        
+                        <li {% if stat_residence_num %}class="active"{%endif%}><a href="/stat/index">每日放盘数量</a></li>
+                        <li {% if stat_residence_num %}class="active"{%endif%}><a href="/stat/total_release_by_month">每月放盘数量</a></li>
+                        <li {% if stat_residence_num %}class="active"{%endif%}><a href="/stat/up_down">涨跌盘数量</a></li>
                     </ul>
                 </li>
                 <li class="menu-list {% if stat_residence_num %}nav-active{%endif%}"><a href=""><i class="fa fa-laptop"></i> <span>每日新盘</span></a>
