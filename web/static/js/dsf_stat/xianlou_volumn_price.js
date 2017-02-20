@@ -14,7 +14,7 @@ volumn_chart = new Highcharts.chart('container_volumn', {
         zoomType: 'x'
     },
     title: {
-        text: '全部楼宇成交数量'
+        text: '现楼成交数量'
     },
     subtitle: {
         text: 'Source: dsf.gov.mo'
@@ -61,7 +61,7 @@ price_chart = new Highcharts.chart('container_price', {
         zoomType: 'x'
     },
     title: {
-        text: '全部楼宇成交价格'
+        text: '现楼成交价格'
     },
     subtitle: {
         text: 'Source: dsf.gov.mo'
@@ -103,7 +103,7 @@ price_chart = new Highcharts.chart('container_price', {
 });
 
 function get_dsf_volumn(){
-        $.getJSON('/api/dsf_total_volumn_price_query?query=volumn', function(json){
+        $.getJSON('/api/dsf_xianlou_volumn_price_query?query=volumn', function(json){
             //console.log(json)
             volumn_chart.xAxis[0].categories = new Array()
             total = new Array();
@@ -122,6 +122,7 @@ function get_dsf_volumn(){
             volumn_chart.series[0].setData(total)
             volumn_chart.series[1].setData(macau)
             volumn_chart.series[2].setData(taipa)
+            //console.log(coloane)
             volumn_chart.series[3].setData(coloane)
         })
     }

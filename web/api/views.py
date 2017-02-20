@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from statistic.models import ResidenceNumByDayModel
 from new_residence.models import NewAddResidenceModel, AllResidenceModel
 from zhongyuan_query.models import ZhongyuanModel
-from dsf_stat.models import DsfRawModel
+from dsf_stat.models import DsfRawModel, DsfXianlouModel, DsfLouhuaModel
 from django.shortcuts import render
 from bson import json_util
 
@@ -228,12 +228,27 @@ def dsf_total_volumn_price_query(request):
         date_beg_format_inner = date
         if date_beg_format_inner in records_dict:
             r = records_dict[date_beg_format_inner]
-            item = {}
-            item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
-            item['total'] = r.total_stat[3][target] if r.total_stat[3][target] else 0
-            item['macau'] = r.total_stat[0][target] if r.total_stat[0][target] else 0
-            item['taipa'] = r.total_stat[1][target] if r.total_stat[1][target] else 0
-            item['coloane'] = r.total_stat[2][target] if r.total_stat[2][target] else 0
+            try:
+                item = {'coloane':0}
+                #item = {}
+                item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
+                for i in r.total_stat:
+                    region = i['region'].split(' ')[0]
+                    print region
+                    if region == u'澳門半島':
+                        item['macau'] = i[target] if i[target] else 0
+                    elif region == u'氹仔':
+                        item['taipa'] = i[target] if i[target] else 0
+                    elif region == u'路環':
+                        #pass
+                        item['coloane'] = i[target] if i[target] else 0
+                    elif region == u'全澳':
+                        #pass
+                        item['total'] = i[target] if i[target] else 0
+                
+            except Exception as e:
+                print len(r.total_stat)
+                print r.total_stat
         else:
             item = {}
             item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
@@ -241,7 +256,116 @@ def dsf_total_volumn_price_query(request):
             item['macau'] = 0
             item['taipa'] = 0
             item['coloane'] = 0
+        if item['total'] == 0:
+            continue
+        ret.append(item)
         
+    return HttpResponse(json.dumps(ret))
+
+@login_required
+def dsf_xianlou_volumn_price_query(request):
+    ret_dict = {'errorno':0, 'data':[]}
+    target = request.GET.get('query', 'volumn')
+
+    now = datetime.now()
+    date_beg = now - timedelta(days = 365 * 6)
+    date_beg_str = date_beg.strftime('%Y%m')
+    print date_beg_str
+    
+    records = DsfXianlouModel.objects(__raw__={'date':{"$gte":date_beg_str}}).order_by('-date')
+    records_dict = {}
+    for r in records:
+        records_dict[r['date']] = r
+
+    ret = []
+    for date in gen_date(date_beg_str, records[0].date):
+        date_beg_format_inner = date
+        if date_beg_format_inner in records_dict:
+            r = records_dict[date_beg_format_inner]
+            try:
+                item = {'coloane':0}
+                #item = {}
+                item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
+                for i in r.total_stat:
+                    region = i['region'].split(' ')[0]
+                    print region
+                    if region == u'澳門半島':
+                        item['macau'] = i[target] if i[target] else 0
+                    elif region == u'氹仔':
+                        item['taipa'] = i[target] if i[target] else 0
+                    elif region == u'路環':
+                        #pass
+                        item['coloane'] = i[target] if i[target] else 0
+                    elif region == u'全澳':
+                        #pass
+                        item['total'] = i[target] if i[target] else 0
+                
+            except Exception as e:
+                print len(r.total_stat)
+                print r.total_stat
+        else:
+            item = {}
+            item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
+            item['total'] = 0
+            item['macau'] = 0
+            item['taipa'] = 0
+            item['coloane'] = 0
+        if item['total'] == 0:
+            continue
+        ret.append(item)
+        
+    return HttpResponse(json.dumps(ret))
+
+@login_required
+def dsf_louhua_volumn_price_query(request):
+    ret_dict = {'errorno':0, 'data':[]}
+    target = request.GET.get('query', 'volumn')
+
+    now = datetime.now()
+    date_beg = now - timedelta(days = 365 * 6)
+    date_beg_str = date_beg.strftime('%Y%m')
+    print date_beg_str
+    
+    records = DsfLouhuaModel.objects(__raw__={'date':{"$gte":date_beg_str}}).order_by('-date')
+    records_dict = {}
+    for r in records:
+        records_dict[r['date']] = r
+
+    ret = []
+    for date in gen_date(date_beg_str, records[0].date):
+        date_beg_format_inner = date
+        if date_beg_format_inner in records_dict:
+            r = records_dict[date_beg_format_inner]
+            try:
+                item = {'coloane':0}
+                #item = {}
+                item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
+                for i in r.total_stat:
+                    region = i['region'].split(' ')[0]
+                    print region
+                    if region == u'澳門半島':
+                        item['macau'] = i[target] if i[target] else 0
+                    elif region == u'氹仔':
+                        item['taipa'] = i[target] if i[target] else 0
+                    elif region == u'路環':
+                        #pass
+                        item['coloane'] = i[target] if i[target] else 0
+                    elif region == u'全澳':
+                        #pass
+                        item['total'] = i[target] if i[target] else 0
+                
+            except Exception as e:
+                print len(r.total_stat)
+                print r.total_stat
+        else:
+            item = {}
+            item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
+            item['total'] = 0
+            item['macau'] = 0
+            item['taipa'] = 0
+            item['coloane'] = 0
+        if item['total'] == 0:
+            continue
         ret.append(item)
         
     return HttpResponse(json.dumps(ret))

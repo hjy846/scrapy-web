@@ -16,3 +16,21 @@ class DsfRawModel(Document):
     stat_type = StringField()
     insert_date = DateTimeField()
     meta = {'collection':"dsf_raw"}
+
+class DsfXianlouModel(Document):
+    date = StringField(required = True)
+    detail_stat = ListField()
+    total_stat = ListField()
+    remark = StringField()
+    stat_type = StringField()
+    insert_date = DateTimeField()
+    meta = {'collection':"dsf_xianlou_raw"}
+
+class DsfLouhuaModel(Document):
+    date = StringField(required = True)
+    detail_stat = ListField()
+    total_stat = ListField()
+    remark = StringField()
+    stat_type = StringField()
+    insert_date = DateTimeField()
+    meta = {'collection':"dsf_louhua_raw"}
