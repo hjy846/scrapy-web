@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def get_residence_num(request):
     now = datetime.now()
-    date_beg = now - timedelta(days = 30)
+    date_beg = now - timedelta(days = 60)
     date_beg_str = date_beg.strftime('%Y-%m-%d')
     records = ResidenceNumByDayModel.objects(__raw__={'date':{"$gte":date_beg_str}}).order_by('date')
 
@@ -47,7 +47,7 @@ def get_residence_num(request):
 @login_required
 def get_residence_num_new(request):
     now = datetime.now()
-    date_beg = now - timedelta(days = 30)
+    date_beg = now - timedelta(days = 60)
     date_beg_str = date_beg.strftime('%Y-%m-%d')
     records = ResidenceNumByDayModel.objects(__raw__={'date':{"$gte":date_beg_str}}).order_by('date')
 

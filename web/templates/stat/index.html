@@ -3,7 +3,6 @@
 {% block title %}Residence Macau{% endblock %}
 
 {% block stylesheet %}
-<link rel="stylesheet" href="/static/js/morris-chart/morris.css">
 {% endblock %}
 
 {% block content %}
@@ -19,7 +18,7 @@
                          </span>
                         </header>
                         <div class="panel-body">
-                            <div id="graph-area-line"></div>
+                            <div id="container_total"></div>
                         </div>
                     </section>
         </div>
@@ -33,7 +32,7 @@
                          </span>
                         </header>
                         <div class="panel-body">
-                            <div id="graph-area-line-new"></div>
+                            <div id="container_new"></div>
                         </div>
                     </section>
         </div>
@@ -42,9 +41,9 @@
 {% endblock %}
 
 {% block script %}
-<script src="/static/js/morris-chart/morris.js"></script>
-<script src="/static/js/morris-chart/raphael-min.js"></script>
-<script src="/static/js/stat/stat_residence_num.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="/static/js/stat/stat_residence_num_new.js"></script>
 <!--script src="static/js/morris-chart/morris.init.js"></script-->
 <script type="text/javascript">
 {% autoescape off %}
