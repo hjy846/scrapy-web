@@ -132,7 +132,7 @@ new_chart = new Highcharts.chart('container_new', {
 
     function get_residence_num_new(){
         $.getJSON('/api/get_residence_num_new', function(json){
-            console.log(json)
+            //console.log(json)
             new_chart.xAxis[0].categories = new Array()
             total = new Array();
             macau = new Array();
