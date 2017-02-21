@@ -51,5 +51,10 @@ class PriceTrendByMonthModel(Document):
     new_coloane = IntField()
     total_coloane = IntField()
     data_coloane = ListField()
+
+    avg_total = IntField()
+    avg_macau = IntField()
+    avg_taipa = IntField()
+    avg_coloane = IntField()
     
     meta = {'collection':"price_trend_by_month"}

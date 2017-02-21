@@ -9,6 +9,7 @@ import pymongo
 import logging
 from scrapy.conf import settings
 from collections import defaultdict
+import numpy as np
 
 
 reload(sys)
@@ -87,13 +88,19 @@ def update_price_trend():
     return
 
 def update_all_price_trend():
-    date_beg = datetime.strptime('2016-02', '%Y-%m')
+    date_beg = datetime.strptime('2016-01', '%Y-%m')
     print date_beg
     result = COLLECTION.find({'update_time':{'$gte':date_beg}})
     all_result = defaultdict(dict)
     all_result_macau = defaultdict(dict)
     all_result_taipa = defaultdict(dict)
     all_result_coloane = defaultdict(dict)
+
+    all_price = defaultdict(list)
+    all_price_macau = defaultdict(list)
+    all_price_taipa = defaultdict(list)
+    all_price_coloane = defaultdict(list)
+    all_price_list = []
     i = 0
     for res in result:
         #print res['price_history']
@@ -103,22 +110,54 @@ def update_all_price_trend():
             price_history.insert(0, item)
             #print price_history
             date = item[0][0:7]
+            
             #print date
             r = calc_price_trend(price_history)
             all_result[date][str(res['_id'])] = r
-            if 'region' not in res['info']:
+            if 'region' in res['info']:
+                if res['info']['region'] == u'澳門':
+                    all_result_macau[date][str(res['_id'])] = r
+                elif res['info']['region'] == u'氹仔':
+                    all_result_taipa[date][str(res['_id'])] = r
+                elif res['info']['region'] == u'路環':
+                    all_result_coloane[date][str(res['_id'])] = r
+
+            #汇总价格
+            price = item[1]
+            if 'size' not in res['info'] or res['info']['size'] == 0:
                 continue
-            if res['info']['region'] == u'澳門':
-                all_result_macau[date][str(res['_id'])] = r
-            elif res['info']['region'] == u'氹仔':
-                all_result_taipa[date][str(res['_id'])] = r
-            elif res['info']['region'] == u'路環':
-                all_result_coloane[date][str(res['_id'])] = r
+            price_per_ft = (price * 10000) / res['info']['size']
+            if price_per_ft > 1000000:
+                print price, res['info']['size']
+                print price_per_ft
+                continue
+            elif price_per_ft < 1000:
+                print res['_id'], price, res['info']['size']
+                print price_per_ft
+                continue 
+            all_price[date].append(price_per_ft)
+            all_price_list.append(price_per_ft)
+            if 'region' in res['info']:
+                if res['info']['region'] == u'澳門':
+                    all_price_macau[date].append(price_per_ft)
+                elif res['info']['region'] == u'氹仔':
+                    all_price_taipa[date].append(price_per_ft)
+                elif res['info']['region'] == u'路環':
+                    all_price_coloane[date].append(price_per_ft)
 
         i += 1
         #if i >5:
             #break
+    #计算呎价均值和标准差
+    np_all_price = np.array(all_price_list)
+    mean = np_all_price.mean()
+    std = np_all_price.std()
+    price_min = mean - std * 3
+    price_max = mean + std * 3
+
+    print mean, std, price_min, price_max
     
+
     for key in all_result:
         item = {}
         item['date'] = key
@@ -148,6 +187,16 @@ def update_all_price_trend():
         item['total_coloane'] = len(item['data_coloane'])
         item['update_time'] = datetime.now()
 
+        #计算均价
+        np_all_price = np.array(all_price[key])
+        #print np_all_price
+        item['avg_total'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+        np_all_price = np.array(all_price_macau[key])
+        item['avg_macau'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+        np_all_price = np.array(all_price_taipa[key])
+        item['avg_taipa'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+        np_all_price = np.array(all_price_coloane[key])
+        item['avg_coloane'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
         #print item
         #del item['data']
         COLLECTION_RESIDENCE_PRICE_TREND_MONTH.update({'date':key}, item, upsert = True)
@@ -166,6 +215,12 @@ def update_all_price_trend_by_month(process_date):
     all_result_macau = defaultdict(dict)
     all_result_taipa = defaultdict(dict)
     all_result_coloane = defaultdict(dict)
+
+    all_price = defaultdict(list)
+    all_price_macau = defaultdict(list)
+    all_price_taipa = defaultdict(list)
+    all_price_coloane = defaultdict(list)
+    all_price_list = []
     i = 0
     for res in result:
         #print res['price_history']
@@ -180,18 +235,49 @@ def update_all_price_trend_by_month(process_date):
             #print date
             r = calc_price_trend(price_history)
             all_result[str(res['_id'])] = r
-            if 'region' not in res['info']:
+            if 'region' in res['info']:
+                if res['info']['region'] == u'澳門':
+                    all_result_macau[date][str(res['_id'])] = r
+                elif res['info']['region'] == u'氹仔':
+                    all_result_taipa[date][str(res['_id'])] = r
+                elif res['info']['region'] == u'路環':
+                    all_result_coloane[date][str(res['_id'])] = r
+
+            #汇总价格
+            price = item[1]
+            if 'size' not in res['info'] or res['info']['size'] == 0:
                 continue
-            if res['info']['region'] == u'澳門':
-                all_result_macau[date][str(res['_id'])] = r
-            elif res['info']['region'] == u'氹仔':
-                all_result_taipa[date][str(res['_id'])] = r
-            elif res['info']['region'] == u'路環':
-                all_result_coloane[date][str(res['_id'])] = r
+            price_per_ft = (price * 10000) / res['info']['size']
+            if price_per_ft > 1000000:
+                print price, res['info']['size']
+                print price_per_ft
+                continue
+            elif price_per_ft < 1000:
+                print res['_id'], price, res['info']['size']
+                print price_per_ft
+                continue 
+            all_price[date].append(price_per_ft)
+            all_price_list.append(price_per_ft)
+            if 'region' in res['info']:
+                if res['info']['region'] == u'澳門':
+                    all_price_macau[date].append(price_per_ft)
+                elif res['info']['region'] == u'氹仔':
+                    all_price_taipa[date].append(price_per_ft)
+                elif res['info']['region'] == u'路環':
+                    all_price_coloane[date].append(price_per_ft)
         i += 1
         #if i >5:
             #break
     
+    #计算呎价均值和标准差
+    np_all_price = np.array(all_price_list)
+    mean = np_all_price.mean()
+    std = np_all_price.std()
+    price_min = mean - std * 3
+    price_max = mean + std * 3
+
+    print mean, std, price_min, price_max
+
     item = {}
     item['date'] = date_beg_str
     item['data'] = all_result
@@ -221,6 +307,18 @@ def update_all_price_trend_by_month(process_date):
     item['update_time'] = datetime.now()
     #print item
     #del item['data']
+
+    #计算均价
+    np_all_price = np.array(all_price[item['date']])
+    #print np_all_price
+    item['avg_total'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+    np_all_price = np.array(all_price_macau[item['date']])
+    item['avg_macau'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+    np_all_price = np.array(all_price_taipa[item['date']])
+    item['avg_taipa'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+    np_all_price = np.array(all_price_coloane[item['date']])
+    item['avg_coloane'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+
     COLLECTION_RESIDENCE_PRICE_TREND_MONTH.update({'date':date_beg_str}, item, upsert = True)
         
     #json.dump(dict(all_result), open('test.json', 'w'), indent = 4, ensure_ascii = False)

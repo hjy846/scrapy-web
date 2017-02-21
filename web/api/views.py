@@ -381,6 +381,10 @@ def get_residence_num_by_month(request):
         item['macau'] = r.total_macau if r.total_macau else 0
         item['taipa'] = r.total_taipa if r.total_taipa else 0
         item['coloane'] = r.total_coloane if r.total_coloane else 0
+        item['avg_total'] = r.avg_total if r.avg_total else 0
+        item['avg_macau'] = r.avg_macau if r.avg_macau else 0
+        item['avg_taipa'] = r.avg_taipa if r.avg_taipa else 0
+        item['avg_coloane'] = r.avg_coloane if r.avg_coloane else 0
         ret.append(item)
     
     return HttpResponse(json.dumps(ret))
