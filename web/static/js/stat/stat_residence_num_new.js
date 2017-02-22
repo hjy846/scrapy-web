@@ -30,6 +30,9 @@ total_chart = new Highcharts.chart('container_total', {
             text: ''
         }
     },
+    tooltip: {
+        shared: true
+    },
     plotOptions: {
         line: {
             dataLabels: {
@@ -78,6 +81,9 @@ new_chart = new Highcharts.chart('container_new', {
         title: {
             text: ''
         }
+    },
+    tooltip: {
+        shared: true
     },
     plotOptions: {
         line: {

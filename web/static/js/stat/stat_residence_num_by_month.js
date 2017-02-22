@@ -68,6 +68,7 @@ total_chart = Highcharts.chart('container_total', {
     }, {
         type: 'column',
         name: '路環放盤量',
+	visible: false,
         data: []
     }, {
         name: '全澳均價',
@@ -98,6 +99,7 @@ total_chart = Highcharts.chart('container_total', {
         type: 'spline',
         yAxis: 1,
         data: [],
+	visible: false,
         tooltip: {
             valuePrefix: '$'
         }

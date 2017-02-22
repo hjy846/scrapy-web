@@ -38,9 +38,6 @@ volumn_chart = new Highcharts.chart('container_volumn', {
             enableMouseTracking: true
         }
     },
-    tooltip: {
-        shared: true
-    },
     series: [{
         name: 'Total',
         data: []
@@ -79,9 +76,6 @@ price_chart = new Highcharts.chart('container_price', {
         title: {
             text: ''
         }
-    },
-    tooltip: {
-        shared: true
     },
     plotOptions: {
         line: {

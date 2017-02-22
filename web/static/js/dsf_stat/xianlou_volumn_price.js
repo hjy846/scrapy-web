@@ -30,6 +30,9 @@ volumn_chart = new Highcharts.chart('container_volumn', {
             text: ''
         }
     },
+    tooltip: {
+        shared: true
+    },
     plotOptions: {
         line: {
             dataLabels: {
@@ -76,6 +79,9 @@ price_chart = new Highcharts.chart('container_price', {
         title: {
             text: ''
         }
+    },
+    tooltip: {
+        shared: true
     },
     plotOptions: {
         line: {
