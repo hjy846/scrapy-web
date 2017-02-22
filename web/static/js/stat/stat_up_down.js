@@ -30,7 +30,7 @@ var chart = Highcharts.chart('container', {
         allowDecimals: false,
         min: 0,
         title: {
-            text: 'Number of fruits'
+            text: ''
         }
     },
 

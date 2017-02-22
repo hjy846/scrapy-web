@@ -2,7 +2,7 @@
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from statistic.models import ResidenceNumByDayModel, PriceTrendByMonthModel
+from statistic.models import ResidenceNumByDayModel, PriceTrendByMonthModel, KeyResidencesModel
 from new_residence.models import NewAddResidenceModel, AllResidenceModel
 from zhongyuan_query.models import ZhongyuanModel
 from dsf_stat.models import DsfRawModel, DsfXianlouModel, DsfLouhuaModel
@@ -418,5 +418,15 @@ def get_up_down_num_by_month(request):
         item['down_taipa'] = r.down_taipa if r.down_taipa else 0
         item['down_coloane'] = r.down_coloane if r.down_coloane else 0
         ret.append(item)
+    
+    return HttpResponse(json.dumps(ret))
+
+@login_required
+def get_key_residences_info(request):
+    records = KeyResidencesModel.objects.aggregate(*[{"$sort":{"date":1}}, {"$group":{"_id":"$building", "date":{"$push":"$date"}, "total":{"$push":"$total"}, "up":{"$push":"$up"}, "down":{"$push":"$down"}, "avg":{"$push":"$avg"}, "new":{"$push":"$new"}}}])
+
+    ret = []
+    for r in records:
+        ret.append(r)
     
     return HttpResponse(json.dumps(ret))

@@ -23,3 +23,4 @@ scrapy crawl centaline_new --logfile=${save_path}/centaline_${log_date}.log >>${
 scrapy crawl dsf -s DOWNLOAD_TIMEOUT=1800 --logfile=${save_path}/dsf_${log_date}.log >>${save_path}/dsf_${log_date}.output
 
 python scripts/stat_price_trend.py ${running_date} >>${save_path}/price_trend_${log_date}.output
+python scripts/stat_price_trend_by_residence.py ${running_date} >>${save_path}/price_trend_by_residence${log_date}.output

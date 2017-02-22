@@ -26,3 +26,10 @@ def up_down(request):
     #records = ResidenceNumByDayModel.objects
     username = request.user.username
     return render(request, 'stat/up_down.html', {'username':username})
+
+#重點關注樓盤
+@login_required
+def key_residences(request):
+    #records = ResidenceNumByDayModel.objects
+    username = request.user.username
+    return render(request, 'stat/key_residences.html', {'username':username})

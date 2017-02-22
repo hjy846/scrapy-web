@@ -175,17 +175,16 @@ def update_all_price_trend():
     #print all_result
     total_item = {}
     for cond in all_result:
-        item = {'building':cond}
         for date in all_result[cond]:
-            item[date] = {}
-            item[date]['data'] = all_result[cond][date]
-            item[date]['up'] = len(filter(lambda x:x[1] == 1, item[date]['data'].items()))
-            item[date]['down'] = len(filter(lambda x:x[1] == -1, item[date]['data'].items()))
-            item[date]['unchange'] = len(filter(lambda x:x[1] == 0, item[date]['data'].items()))
-            item[date]['new'] = len(filter(lambda x:x[1] == 2, item[date]['data'].items()))
-            item[date]['total'] = len(item[date]['data'])
+            item = {'building':cond, 'date':date}
+            item['data'] = all_result[cond][date]
+            item['up'] = len(filter(lambda x:x[1] == 1, item['data'].items()))
+            item['down'] = len(filter(lambda x:x[1] == -1, item['data'].items()))
+            item['unchange'] = len(filter(lambda x:x[1] == 0, item['data'].items()))
+            item['new'] = len(filter(lambda x:x[1] == 2, item['data'].items()))
+            item['total'] = len(item['data'])
             
-            item[date]['update_time'] = datetime.now()
+            item['update_time'] = datetime.now()
 
             #计算均价
             np_all_price = np.array(all_price[cond][date])
@@ -194,10 +193,10 @@ def update_all_price_trend():
             #print np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)]
             #print date
             if len(np_all_price) != 0:
-                item[date]['avg'] = np_all_price.mean()
+                item['avg'] = int(np_all_price.mean())
             #print item
             #del item['data']
-        COLLECTION_RESIDENCE_PRICE_TREND_BY_RESIDENCE.update({'building':cond}, item, upsert = True)
+            COLLECTION_RESIDENCE_PRICE_TREND_BY_RESIDENCE.update({'building':cond, 'date':date}, item, upsert = True)
         
     #json.dump(dict(all_result), open('test.json', 'w'), indent = 4, ensure_ascii = False)
     return
@@ -264,16 +263,15 @@ def update_all_price_trend_by_month(process_date):
     print mean, std, price_min, price_max
 
     for cond in all_result:
-        item = {'building':cond}
-        item[date_beg_str] = {}
-        item[date_beg_str]['data'] = all_result[cond][date_beg_str]
-        item[date_beg_str]['up'] = len(filter(lambda x:x[1] == 1, item[date_beg_str]['data'].items()))
-        item[date_beg_str]['down'] = len(filter(lambda x:x[1] == -1, item[date_beg_str]['data'].items()))
-        item[date_beg_str]['unchange'] = len(filter(lambda x:x[1] == 0, item[date_beg_str]['data'].items()))
-        item[date_beg_str]['new'] = len(filter(lambda x:x[1] == 2, item[date_beg_str]['data'].items()))
-        item[date_beg_str]['total'] = len(item[date_beg_str]['data'])
+        item = {'building':cond, 'date':date_beg_str}
+        item['data'] = all_result[cond][date_beg_str]
+        item['up'] = len(filter(lambda x:x[1] == 1, item['data'].items()))
+        item['down'] = len(filter(lambda x:x[1] == -1, item['data'].items()))
+        item['unchange'] = len(filter(lambda x:x[1] == 0, item['data'].items()))
+        item['new'] = len(filter(lambda x:x[1] == 2, item['data'].items()))
+        item['total'] = len(item['data'])
         
-        item[date_beg_str]['update_time'] = datetime.now()
+        item['update_time'] = datetime.now()
         #print item
         #del item['data']
 
@@ -283,9 +281,9 @@ def update_all_price_trend_by_month(process_date):
         np_all_price = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)]
 
         if len(np_all_price) != 0:
-            item[date]['avg'] = np_all_price.mean()
+            item['avg'] = int(np_all_price.mean())
 
-        COLLECTION_RESIDENCE_PRICE_TREND_BY_RESIDENCE.update({'building':cond}, {'$set':item}, upsert = True)
+        COLLECTION_RESIDENCE_PRICE_TREND_BY_RESIDENCE.update({'building':cond, 'date':date_beg_str}, {'$set':item}, upsert = True)
         
     #json.dump(dict(all_result), open('test.json', 'w'), indent = 4, ensure_ascii = False)
     return

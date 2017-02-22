@@ -16,5 +16,6 @@ urlpatterns = [
     url(r"^zhongyuan_query/", views.zhongyuan_query, name = 'zhongyuan_query'),
     url(r"^dsf_total_volumn_price_query/", views.dsf_total_volumn_price_query, name = 'dsf_total_volumn_price_query'),
     url(r"^dsf_xianlou_volumn_price_query/", views.dsf_xianlou_volumn_price_query, name = 'dsf_xianlou_volumn_price_query'),
-    url(r"^dsf_louhua_volumn_price_query/", views.dsf_louhua_volumn_price_query, name = 'dsf_louhua_volumn_price_query')
+    url(r"^dsf_louhua_volumn_price_query/", views.dsf_louhua_volumn_price_query, name = 'dsf_louhua_volumn_price_query'),
+    url(r"^get_key_residences_info/", views.get_key_residences_info, name = 'get_key_residences_info')
 ]

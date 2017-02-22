@@ -58,3 +58,15 @@ class PriceTrendByMonthModel(Document):
     avg_coloane = IntField()
     
     meta = {'collection':"price_trend_by_month"}
+
+class KeyResidencesModel(Document):
+    building = StringField()
+    update_time = DateTimeField()
+    date = StringField()
+    unchange = IntField()
+    up = IntField()
+    down = IntField()
+    new = IntField()
+    total = IntField()
+    data = ListField()
+    meta = {'collection':"price_trend_by_residence"}
