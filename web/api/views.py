@@ -234,7 +234,7 @@ def dsf_total_volumn_price_query(request):
                 item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
                 for i in r.total_stat:
                     region = i['region'].split(' ')[0]
-                    print region
+                    #print region
                     if region == u'澳門半島':
                         item['macau'] = i[target] if i[target] else 0
                     elif region == u'氹仔':
@@ -288,7 +288,7 @@ def dsf_xianlou_volumn_price_query(request):
                 item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
                 for i in r.total_stat:
                     region = i['region'].split(' ')[0]
-                    print region
+                    #print region
                     if region == u'澳門半島':
                         item['macau'] = i[target] if i[target] else 0
                     elif region == u'氹仔':
@@ -342,7 +342,7 @@ def dsf_louhua_volumn_price_query(request):
                 item['date'] = '%s-%s' % (date_beg_format_inner[0:4], date_beg_format_inner[4:6])
                 for i in r.total_stat:
                     region = i['region'].split(' ')[0]
-                    print region
+                    #print region
                     if region == u'澳門半島':
                         item['macau'] = i[target] if i[target] else 0
                     elif region == u'氹仔':

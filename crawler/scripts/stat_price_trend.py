@@ -190,13 +190,13 @@ def update_all_price_trend():
         #计算均价
         np_all_price = np.array(all_price[key])
         #print np_all_price
-        item['avg_total'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+        item['avg_total'] = int(np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean())
         np_all_price = np.array(all_price_macau[key])
-        item['avg_macau'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+        item['avg_macau'] = int(np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean())
         np_all_price = np.array(all_price_taipa[key])
-        item['avg_taipa'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+        item['avg_taipa'] = int(np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean())
         np_all_price = np.array(all_price_coloane[key])
-        item['avg_coloane'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+        item['avg_coloane'] = int(np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean())
         #print item
         #del item['data']
         COLLECTION_RESIDENCE_PRICE_TREND_MONTH.update({'date':key}, item, upsert = True)
@@ -311,13 +311,13 @@ def update_all_price_trend_by_month(process_date):
     #计算均价
     np_all_price = np.array(all_price[item['date']])
     #print np_all_price
-    item['avg_total'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+    item['avg_total'] = int(np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean())
     np_all_price = np.array(all_price_macau[item['date']])
-    item['avg_macau'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+    item['avg_macau'] = int(np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean())
     np_all_price = np.array(all_price_taipa[item['date']])
-    item['avg_taipa'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+    item['avg_taipa'] = int(np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean())
     np_all_price = np.array(all_price_coloane[item['date']])
-    item['avg_coloane'] = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean()
+    item['avg_coloane'] = int(np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)].mean())
 
     COLLECTION_RESIDENCE_PRICE_TREND_MONTH.update({'date':date_beg_str}, item, upsert = True)
         
