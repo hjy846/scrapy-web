@@ -83,6 +83,9 @@ var options_price = {
                 enabled: false
             },
             enableMouseTracking: true
+        },
+        series:{
+            connectNulls:true
         }
     },
     series: [

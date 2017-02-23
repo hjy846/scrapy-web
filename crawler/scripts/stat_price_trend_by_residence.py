@@ -39,7 +39,7 @@ def get_param(sys):
 #獲取需要監控的樓盤
 def get_residences():
     return set([u'裕華大廈', u'保利達花園', u'亨達大廈', u'鴻發花園', u'綠楊花園', u'金海山花園', u'海名居', u'海天居', u'環宇天下', u'君悅灣', u'太子花城', u'濠庭都會', u'鴻業大廈', u'廣福安花園', u'金利達花園'])
-    #return set([u'亨達大廈'])
+    #return set([u'環宇天下'])
 
 '''
 跟上一次价格变化数据比
@@ -113,8 +113,20 @@ def calc_condition(residence_info):
         return False
     else: return True
 
+def gen_date_range(beg):
+    ret = set()
+    date_beg = datetime.strptime(beg, '%Y-%m')
+    date_end = datetime.now()
+    while(date_beg <=date_end):
+        d = date_beg.strftime('%Y-%m')
+        ret.add(d)
+        date_beg += timedelta(1)
+    return ret
+
 def update_all_price_trend():
-    date_beg = datetime.strptime('2016-01', '%Y-%m')
+    #必須從16-05開始
+    date_beg_str = '2016-05'
+    date_beg = datetime.strptime(date_beg_str, '%Y-%m')
     print date_beg
     result = COLLECTION.find({'update_time':{'$gte':date_beg}})
     all_result = init_data()
@@ -145,6 +157,7 @@ def update_all_price_trend():
             all_result_total[date][str(res['_id'])] = r
             #汇总价格
             price = item[1]
+
             if 'size' not in res['info'] or res['info']['size'] == 0:
                 continue
             price_per_ft = (price * 10000) / res['info']['size']
@@ -156,7 +169,6 @@ def update_all_price_trend():
                 print res['_id'], price, res['info']['size']
                 print price_per_ft
                 continue 
-
             all_price[building][date].append(price_per_ft)
             all_price_total[date].append(price_per_ft)
             all_price_list.append(price_per_ft)
@@ -173,18 +185,21 @@ def update_all_price_trend():
 
     print mean, std, price_min, price_max
     #print all_result
+    date_range = gen_date_range(date_beg_str)
     total_item = {}
     for cond in all_result:
-        for date in all_result[cond]:
+        for date in date_range:
             item = {'building':cond, 'date':date}
-            item['data'] = all_result[cond][date]
+            item['update_time'] = datetime.now()
+            if date not in all_result[cond]:
+                item['data'] = {}
+            else:
+                item['data'] = all_result[cond][date]
             item['up'] = len(filter(lambda x:x[1] == 1, item['data'].items()))
             item['down'] = len(filter(lambda x:x[1] == -1, item['data'].items()))
             item['unchange'] = len(filter(lambda x:x[1] == 0, item['data'].items()))
             item['new'] = len(filter(lambda x:x[1] == 2, item['data'].items()))
             item['total'] = len(item['data'])
-            
-            item['update_time'] = datetime.now()
 
             #计算均价
             np_all_price = np.array(all_price[cond][date])
@@ -194,6 +209,8 @@ def update_all_price_trend():
             #print date
             if len(np_all_price) != 0:
                 item['avg'] = int(np_all_price.mean())
+            else:
+                item['avg'] = None
             #print item
             #del item['data']
             COLLECTION_RESIDENCE_PRICE_TREND_BY_RESIDENCE.update({'building':cond, 'date':date}, item, upsert = True)
@@ -264,14 +281,18 @@ def update_all_price_trend_by_month(process_date):
 
     for cond in all_result:
         item = {'building':cond, 'date':date_beg_str}
-        item['data'] = all_result[cond][date_beg_str]
+        item['update_time'] = datetime.now()
+        if date_beg_str not in all_result[cond]:
+            item['data'] = {}
+        else:
+            item['data'] = all_result[cond][date_beg_str]
         item['up'] = len(filter(lambda x:x[1] == 1, item['data'].items()))
         item['down'] = len(filter(lambda x:x[1] == -1, item['data'].items()))
         item['unchange'] = len(filter(lambda x:x[1] == 0, item['data'].items()))
         item['new'] = len(filter(lambda x:x[1] == 2, item['data'].items()))
         item['total'] = len(item['data'])
         
-        item['update_time'] = datetime.now()
+        
         #print item
         #del item['data']
 
@@ -282,6 +303,8 @@ def update_all_price_trend_by_month(process_date):
 
         if len(np_all_price) != 0:
             item['avg'] = int(np_all_price.mean())
+        else:
+            item['avg'] = None
 
         COLLECTION_RESIDENCE_PRICE_TREND_BY_RESIDENCE.update({'building':cond, 'date':date_beg_str}, {'$set':item}, upsert = True)
         
@@ -326,6 +349,7 @@ if __name__ == '__main__':
     
     process_date = process_date.strftime('%Y-%m')
     print process_date
+    #process_date = "2016-09"
     update_all_price_trend_by_month(process_date)
     #update_all_price_trend()
     #calc_date()
