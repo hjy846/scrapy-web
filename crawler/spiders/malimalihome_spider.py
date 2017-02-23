@@ -215,22 +215,22 @@ class ResidenceSpider(scrapy.Spider):
                 item['image_list'] = sel.xpath('div[@class="view-photo"]/div[@class="photo-big"]/a/@href').extract()
                 item['agent_name'] = response.xpath('//div[@class="view-agent-desc-contact"]/text()').extract()
                 if len(item['agent_name']):
-                    item['agent_name'] = item['agent_name'][0]
+                    item['agent_name'] = item['agent_name'][0].strip()
                 else:  item['agent_name'] = ""
                 
                 item['agent_contact'] = response.xpath('//span[@class="view-agent-desc-phone result-list-b-phone-shown"]/text()').extract()
                 if len(item['agent_contact']):
-                    item['agent_contact'] = item['agent_contact'][0]
+                    item['agent_contact'] = item['agent_contact'][0].strip()
                 else:  item['agent_contact'] = ""
 
                 item['agent_company'] = response.xpath('//div[@class="view-agent-name"]/b/text()').extract()
                 if len(item['agent_company']):
-                    item['agent_company'] = item['agent_company'][0]
+                    item['agent_company'] = item['agent_company'][0].strip()
                 else:  item['agent_company'] = ""
 
                 item['agent_address'] = response.xpath('//div[@class="view-agent-desc-adr"]/text()').extract()
                 if len(item['agent_address']):
-                    item['agent_address'] = item['agent_address'][0]
+                    item['agent_address'] = item['agent_address'][0].strip()
                 else:  item['agent_address'] = ""
 
                 yield item
