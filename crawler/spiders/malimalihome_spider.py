@@ -213,7 +213,7 @@ class ResidenceSpider(scrapy.Spider):
                 item['remark'] = info_list[18].strip().strip('-')
                 item['detail_insert_time'] = datetime.now()
                 item['image_list'] = sel.xpath('div[@class="view-photo"]/div[@class="photo-big"]/a/@href').extract()
-		item['agent_name'] = response.xpath('//div[@class="view-agent-desc-contact"]/text()').extract()
+                item['agent_name'] = response.xpath('//div[@class="view-agent-desc-contact"]/text()').extract()
                 if len(item['agent_name']):
                     item['agent_name'] = item['agent_name'][0]
                 else:  item['agent_name'] = ""
