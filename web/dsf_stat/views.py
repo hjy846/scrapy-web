@@ -18,3 +18,8 @@ def xianlou_volumn_price(request):
 def louhua_volumn_price(request):
     username = request.user.username
     return render(request, 'dsf_stat/louhua_volumn_price.html', {'username':username})
+
+@login_required
+def detail(request):
+    username = request.user.username
+    return render(request, 'dsf_stat/detail.html', {'username':username})

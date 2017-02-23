@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from statistic.models import ResidenceNumByDayModel, PriceTrendByMonthModel, KeyResidencesModel
 from new_residence.models import NewAddResidenceModel, AllResidenceModel
 from zhongyuan_query.models import ZhongyuanModel
-from dsf_stat.models import DsfRawModel, DsfXianlouModel, DsfLouhuaModel
+from dsf_stat.models import DsfRawModel, DsfXianlouModel, DsfLouhuaModel, DsfStatModel
 from django.shortcuts import render
 from bson import json_util
 
@@ -429,4 +429,54 @@ def get_key_residences_info(request):
     for r in records:
         ret.append(r)
     
+    return HttpResponse(json.dumps(ret))
+
+
+@login_required
+def get_dsf_detail(request):
+    ret = {}
+    dsf_type = request.GET.get('dsf_type', 'total')
+    date = request.GET.get('date', '201701')
+    
+    records = DsfStatModel.objects(__raw__={'date':date})
+    if len(records) == 0:
+        HttpResponse(json.dumps(ret)) 
+
+    age_categories = ['<=5', '06-10', '11-20', '21-30', '> 30']
+    region_categories = []
+    price_categories = []
+
+    age = []
+    region = []
+    price = []
+
+    for i in age_categories:
+        if i in records[0]['age']:
+            age.append(records[0]['age'][i])
+        else: age.append(0)
+
+    age_categories_desc = ['5年或以下', '6-10年', '11-20年', '21-30年', '大於30年']
+
+    price_list = [(int(i[0]), i[1]) for i in records[0]['price'].items()]
+    price_list_sort_by_price = sorted(price_list, key = lambda x:x[0])
+    print price_list_sort_by_price
+    for i in price_list_sort_by_price:
+        price_categories.append(str(i[0]) + '萬/平米')
+        price.append(i[1])
+
+
+
+    for i in records[0]['region']:
+        region_categories.append(i)
+        region.append(records[0]['region'][i])
+        #print 
+
+    ret['age_categories'] = age_categories_desc
+    ret['age'] = age
+    ret['price_categories'] = price_categories
+    ret['price'] = price
+    ret['region_categories'] = region_categories
+    ret['region'] = region
+    ret['date'] = date
+        
     return HttpResponse(json.dumps(ret))

@@ -34,3 +34,11 @@ class DsfLouhuaModel(Document):
     stat_type = StringField()
     insert_date = DateTimeField()
     meta = {'collection':"dsf_louhua_raw"}
+
+class DsfStatModel(Document):
+    date = StringField(required = True)
+    dsf_type = StringField()
+    age = DictField()
+    price = DictField()
+    region = DictField()
+    meta = {'collection':"dsf_stat"}

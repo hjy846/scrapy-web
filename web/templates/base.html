@@ -95,6 +95,7 @@
                 </li>
                 <li class="menu-list {% if stat_residence_num %}nav-active{%endif%}"><a href=""><i class="fa fa-laptop"></i> <span>DSF统计</span></a>
                     <ul class="sub-menu-list">
+                        <li {% if stat_residence_num %}class="active"{%endif%}><a href="/dsf_stat/detail">詳細統計(樓齡/均價等)</a></li>
                         <li {% if stat_residence_num %}class="active"{%endif%}><a href="/dsf_stat/total_volumn_price">全部楼宇成交/價格統計</a></li>
                         <li {% if stat_residence_num %}class="active"{%endif%}><a href="/dsf_stat/xianlou_volumn_price">现楼成交/價格統計</a></li>
                         <li {% if stat_residence_num %}class="active"{%endif%}><a href="/dsf_stat/louhua_volumn_price">楼花成交/價格統計</a></li>
