@@ -46,6 +46,11 @@ class ResidenceDetailItem(scrapy.Item):
     detail_insert_time = scrapy.Field()
     image_list = scrapy.Field()
 
+    agent_name = scrapy.Field()
+    agent_contact = scrapy.Field()
+    agent_company = scrapy.Field()
+    agent_address = scrapy.Field()
+
 
 class ResidenceImageItem(scrapy.Item):
     # ... other item fields ...
