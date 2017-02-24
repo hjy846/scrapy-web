@@ -438,7 +438,7 @@ def get_dsf_detail(request):
     dsf_type = request.GET.get('dsf_type', 'total')
     date = request.GET.get('date', '201701')
     
-    records = DsfStatModel.objects(__raw__={'date':date})
+    records = DsfStatModel.objects(__raw__={'date':date, 'dsf_type':dsf_type})
     if len(records) == 0:
         HttpResponse(json.dumps(ret)) 
 
@@ -448,6 +448,8 @@ def get_dsf_detail(request):
 
     age = []
     region = []
+    region_size = []
+    region_price = []
     price = []
 
     for i in age_categories:
@@ -459,16 +461,17 @@ def get_dsf_detail(request):
 
     price_list = [(int(i[0]), i[1]) for i in records[0]['price'].items()]
     price_list_sort_by_price = sorted(price_list, key = lambda x:x[0])
-    print price_list_sort_by_price
+    #print price_list_sort_by_price
     for i in price_list_sort_by_price:
         price_categories.append(str(i[0]) + '萬/平米')
         price.append(i[1])
 
 
-
     for i in records[0]['region']:
         region_categories.append(i)
         region.append(records[0]['region'][i])
+        region_price.append(records[0]['region_price'][i])
+        region_size.append(records[0]['region_size'][i])
         #print 
 
     ret['age_categories'] = age_categories_desc
@@ -477,6 +480,8 @@ def get_dsf_detail(request):
     ret['price'] = price
     ret['region_categories'] = region_categories
     ret['region'] = region
+    ret['region_price'] = region_price
+    ret['region_size'] = region_size
     ret['date'] = date
         
     return HttpResponse(json.dumps(ret))

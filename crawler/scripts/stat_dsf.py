@@ -36,7 +36,7 @@ def get_param(sys):
     #settings['crawl_date'] = self.crawl_date
     return {'crawl_date':crawl_date}
 
-def stat_dsf(month = '', dsf_type = ''):
+def stat_dsf(month = '', dsf_type = 'xianlou'):
     collection = None
     if dsf_type == 'xianlou':
         collection = COLLECTION_DSF_XIANLOU
@@ -56,17 +56,35 @@ def stat_dsf(month = '', dsf_type = ''):
         item = {}
         age = defaultdict(int)
         region = defaultdict(int)
+        region_price = {}
+        region_size = {}
         price = defaultdict(int)
         for detail in res['detail_stat']:
-            if detail['age'] == 'all':continue
-            age[detail['age']] += detail['volumn']
-            region[detail['region']] += detail['volumn']
-            price[str(detail['avage_price'] / 10000)] += detail['volumn']
+            if detail['age'] == 'all':
+                if detail['height'] == 'all' and detail['index'] != 'all':
+                    region_price[detail['region']] = int(detail['avage_price'] / 10000)
+                    region_size[detail['region']] = detail['size']
+                    region[detail['region']] = detail['volumn']
+                    print detail
+                else:
+                    continue
+            else:
+                age[detail['age']] += detail['volumn']
+                #region[detail['region']] += detail['volumn']
+                price[str(detail['avage_price'] / 10000)] += detail['volumn']
         
         item['date'] = res['date']
+        #按樓齡統計成交數
         item['age'] = age
+        #按地區統計成交數
         item['region'] = region
+        #按地區統計成交價格
+        item['region_price'] = region_price
+        #按地區統計平均成交面積
+        item['region_size'] = region_size
+        #按價格統計成交數
         item['price'] = price
+
         item['dsf_type'] = dsf_type
         #print item
         COLLECTION_DSF_STAT.update({'date':res['date'], 'dsf_type':dsf_type}, item, upsert = True)
@@ -114,6 +132,7 @@ if __name__ == '__main__':
     process_date = process_date.strftime('%Y-%m')
     print process_date
     
+    #stat_dsf()
     stat_dsf_all()
     
 

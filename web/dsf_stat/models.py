@@ -41,4 +41,6 @@ class DsfStatModel(Document):
     age = DictField()
     price = DictField()
     region = DictField()
+    region_price = DictField()
+    region_size = DictField()
     meta = {'collection':"dsf_stat"}

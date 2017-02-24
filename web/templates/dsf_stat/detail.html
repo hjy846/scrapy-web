@@ -11,6 +11,38 @@
         <div class="col-sm-12">
             <section class="panel">
                 <header class="panel-heading">
+                查詢：
+            </header>
+            <div class="panel-body">
+                        <form class="form-inline">
+                            
+                            
+                            <div class="form-group">
+                                <label for="exampleInputPassword2">查詢類型：</label>
+                                <!--input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password"-->
+                            </div>
+                            <div class="btn-group">
+                                <button data-toggle="dropdown" type="button" class="btn btn-default dropdown-toggle" id="dropdown-dsf-type" dsf-type="total">
+                                    全部樓宇  <span class="caret"></span>
+                                </button>
+                                <ul role="menu" class="dropdown-menu">
+                                    <li><a href="#" dsf-type="total">全部樓宇</a></li>
+                                    <li><a href="#" dsf-type="xianlou">現樓</a></li>
+                                    <li><a href="#" dsf-type="louhua">樓花</a></li>
+                                </ul>
+                            </div><!-- /btn-group -->
+                            <div class="btn-group">
+                                <label>查詢日期：</label>
+                                <input type="text" class="form-control" name="query_date" id="query_date" value="201701">
+                            </div><!-- /btn-group -->
+                            
+                            <button class="btn btn-success" type="button" id="query_button">Query</button>
+                        </form>
+
+                    </div>
+            </section>
+            <section class="panel">
+                <header class="panel-heading">
                     樓齡統計
                 <span class="tools pull-right">
                     <a href="javascript:;" class="fa fa-chevron-down"></a>
