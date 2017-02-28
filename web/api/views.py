@@ -472,7 +472,16 @@ def get_dsf_detail(request):
         region.append(records[0]['region'][i])
         region_price.append(records[0]['region_price'][i])
         region_size.append(records[0]['region_size'][i])
-        #print 
+        #print
+
+    total_price_list = [(int(i[0]), i[1]) for i in records[0]['total_price'].items()]
+    total_price_list_sort_by_price = sorted(total_price_list, key = lambda x:x[0])
+    total_price = []
+    total_price_categories = []
+
+    for i in total_price_list_sort_by_price:
+        total_price_categories.append(str(i[0]) + '萬+')
+        total_price.append(i[1])
 
     ret['age_categories'] = age_categories_desc
     ret['age'] = age
@@ -483,5 +492,7 @@ def get_dsf_detail(request):
     ret['region_price'] = region_price
     ret['region_size'] = region_size
     ret['date'] = date
-        
+    ret['total_price_categories'] = total_price_categories
+    ret['total_price'] = total_price
+         
     return HttpResponse(json.dumps(ret))

@@ -168,6 +168,88 @@ var options_price = {
     }]
 }
 
+var options_total_price = {
+    chart: {
+        zoomType: 'x',
+        renderTo: "container_total_price"
+    },
+    title: {
+        text: '成交總價數據'
+    },
+    subtitle: {
+        text: '只有統計到區的數據，跟實際成交數據有出入，僅供參考'
+    },
+    xAxis: {
+        categories: []
+    },
+    legend: {
+        enabled: false
+    },
+    yAxis: {
+        title: {
+            text: '成交宗數'
+        }
+    },
+    labels: {
+        items: [{
+            html: '',
+            style: {
+                left: '50px',
+                top: '18px',
+                color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+            }
+        }],
+
+    },
+    series: [{
+        type: 'column',
+        name: '總價',
+        data: [3, 2, 1, 3, 4],
+        colorByPoint: true,
+        dataLabels: {
+            enabled: true,
+            rotation: 0,
+            color: '#FFFFFF',
+            align: 'center',
+            format: '{point.y:f}', // one decimal
+            y: -1, // 10 pixels down from the top
+            style: {
+                fontSize: '10px',
+                fontFamily: 'Verdana, sans-serif'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:f}</b>宗<br/>'
+        }
+    }, {
+        type: 'pie',
+        name: '佔比',
+        data: [{
+            name: 'Jane',
+            y: 13,
+            color: Highcharts.getOptions().colors[0] // Jane's color
+        }, {
+            name: 'John',
+            y: 23,
+            color: Highcharts.getOptions().colors[1] // John's color
+        }, {
+            name: 'Joe',
+            y: 19,
+            color: Highcharts.getOptions().colors[2] // Joe's color
+        }],
+        center: [350, 50],
+        size: 100,
+        showInLegend: false,
+        dataLabels: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        }
+    }]
+}
+
 var options_region = {
     chart: {
         renderTo: 'container_region',
@@ -313,6 +395,20 @@ jQuery('#query_button').click(function(){
             }
             //console.log(options_price.series[1])
             chart_price = new Highcharts.Chart(options_price)
+
+            options_total_price.xAxis.categories = json.total_price_categories
+            options_total_price.series[0].data = new Array()
+            options_total_price.series[1].data = new Array()
+            for(var i = 0;i<json.total_price_categories.length;++i){
+                d = new Object()
+                d.name = json.total_price_categories[i]
+                d.y = json.total_price[i]
+                d.color = Highcharts.getOptions().colors[i]
+                options_total_price.series[1].data.push(d)
+                options_total_price.series[0].data.push(d)
+            }
+            //console.log(options_price.series[1])
+            chart_total_price = new Highcharts.Chart(options_total_price)
             
             //options_region.title.text += '(' + json.date + ')'
             options_region.xAxis[0].categories = json.region_categories
@@ -334,7 +430,7 @@ jQuery('.dropdown-menu li a').click(function(){
 
 function get_dsf_detail(){
         $.getJSON('/api/get_dsf_detail?dsf_type=total&date=201701', function(json){
-            //console.log(json)
+            console.log(json)
             //options_age.title.text += '(' + json.date + ')'
             options_age.xAxis.categories = json.age_categories
             options_age.series[0].data = new Array()
@@ -362,9 +458,23 @@ function get_dsf_detail(){
                 options_price.series[1].data.push(d)
                 options_price.series[0].data.push(d)
             }
-            console.log(options_price.series[1])
+
             chart_price = new Highcharts.Chart(options_price)
             
+            options_total_price.xAxis.categories = json.total_price_categories
+            options_total_price.series[0].data = new Array()
+            options_total_price.series[1].data = new Array()
+            for(var i = 0;i<json.total_price_categories.length;++i){
+                d = new Object()
+                d.name = json.total_price_categories[i]
+                d.y = json.total_price[i]
+                d.color = Highcharts.getOptions().colors[i]
+                options_total_price.series[1].data.push(d)
+                options_total_price.series[0].data.push(d)
+            }
+            //console.log(options_price.series[1])
+            chart_total_price = new Highcharts.Chart(options_total_price)
+
             //options_region.title.text += '(' + json.date + ')'
             options_region.xAxis[0].categories = json.region_categories
             options_region.series[0].data = json.region

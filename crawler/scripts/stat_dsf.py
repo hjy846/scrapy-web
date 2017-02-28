@@ -59,7 +59,9 @@ def stat_dsf(month = '', dsf_type = 'xianlou'):
         region_price = {}
         region_size = {}
         price = defaultdict(int)
+        total_price = defaultdict(int)
         for detail in res['detail_stat']:
+            #統計項
             if detail['age'] == 'all':
                 if detail['height'] == 'all' and detail['index'] != 'all':
                     region_price[detail['region']] = int(detail['avage_price'] / 10000)
@@ -68,8 +70,12 @@ def stat_dsf(month = '', dsf_type = 'xianlou'):
                     print detail
                 else:
                     continue
+            #子項
             else:
                 age[detail['age']] += detail['volumn']
+                sell_price = str(int((detail['avage_price'] * detail['size']) / 1000000) * 100)
+                print sell_price
+                total_price[sell_price] += detail['volumn']
                 #region[detail['region']] += detail['volumn']
                 price[str(detail['avage_price'] / 10000)] += detail['volumn']
         
@@ -84,6 +90,8 @@ def stat_dsf(month = '', dsf_type = 'xianlou'):
         item['region_size'] = region_size
         #按價格統計成交數
         item['price'] = price
+        #按總價統計成交數
+        item['total_price'] = total_price
 
         item['dsf_type'] = dsf_type
         #print item
