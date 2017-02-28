@@ -107,9 +107,7 @@ def init_data_list():
     return ret
 
 def calc_condition(residence_info):
-    if 'building' not in residence_info:
-        return False
-    if residence_info['building'] not in CALC_RESIDENCES:
+    if 'building' not in residence_info or 'building_name' not in residence_info:
         return False
     else: return True
 
@@ -129,10 +127,10 @@ def update_all_price_trend():
     date_beg = datetime.strptime(date_beg_str, '%Y-%m')
     print date_beg
     result = COLLECTION.find({'update_time':{'$gte':date_beg}})
-    all_result = init_data()
+    all_result = {}
     all_result_total = defaultdict(dict)
 
-    all_price = init_data_list()
+    all_price = {}
     all_price_total = defaultdict(list)
 
     all_price_list = []
@@ -141,8 +139,11 @@ def update_all_price_trend():
         #print res['price_history']
         if calc_condition(res['info']) == False:
             continue
-        
-        building = res['info']['building']
+        try:
+            building = res['info']['building']
+        except Exception as e:
+            building = res['info']['building_name']
+
         price_his_items = sorted(res['price_history'].items())
         price_history = []
         for item in price_his_items:
@@ -153,6 +154,8 @@ def update_all_price_trend():
             #print date
             r = calc_price_trend(price_history)
             
+            if building not in all_result:
+                all_result[building] = defaultdict(dict)
             all_result[building][date][str(res['_id'])] = r
             all_result_total[date][str(res['_id'])] = r
             #汇总价格
@@ -169,8 +172,12 @@ def update_all_price_trend():
                 print res['_id'], price, res['info']['size']
                 print price_per_ft
                 continue 
+
+            if building not in all_price:
+                all_price[building] = defaultdict(list)
             all_price[building][date].append(price_per_ft)
             all_price_total[date].append(price_per_ft)
+
             all_price_list.append(price_per_ft)
 
         i += 1
@@ -184,6 +191,8 @@ def update_all_price_trend():
     price_max = mean + std * 3
 
     print mean, std, price_min, price_max
+    for i in all_price.keys():
+        print i
     #print all_result
     date_range = gen_date_range(date_beg_str)
     total_item = {}
@@ -202,7 +211,9 @@ def update_all_price_trend():
             item['total'] = len(item['data'])
 
             #计算均价
+            if cond not in all_price:continue
             np_all_price = np.array(all_price[cond][date])
+
             np_all_price = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)]
             #print np_all_price
             #print np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)]
@@ -224,10 +235,10 @@ def update_all_price_trend_by_month(process_date):
     #print date_beg
     result = COLLECTION.find({'update_time':{'$gte':date_beg}})
     
-    all_result = init_data()
+    all_result = {}
     all_result_total = defaultdict(dict)
 
-    all_price = init_data_list()
+    all_price = {}
     all_price_total = defaultdict(list)
 
     all_price_list = []
@@ -236,7 +247,10 @@ def update_all_price_trend_by_month(process_date):
         #print res['price_history']
         if calc_condition(res['info']) == False:
             continue
-        building = res['info']['building']
+        try:
+            building = res['info']['building']
+        except Exception as e:
+            building = res['info']['building_name']
         price_his_items = sorted(res['price_history'].items())
         price_history = []
         for item in price_his_items:
@@ -247,6 +261,8 @@ def update_all_price_trend_by_month(process_date):
                 continue
             #print date
             r = calc_price_trend(price_history)
+            if building not in all_result:
+                all_result[building] = defaultdict(dict)
             all_result[building][date][str(res['_id'])] = r
             all_result_total[date][str(res['_id'])] = r
             #汇总价格
@@ -262,7 +278,8 @@ def update_all_price_trend_by_month(process_date):
                 print res['_id'], price, res['info']['size']
                 print price_per_ft
                 continue 
-
+            if building not in all_price:
+                all_price[building] = defaultdict(list)
             all_price[building][date].append(price_per_ft)
             all_price_total[date].append(price_per_ft)
             all_price_list.append(price_per_ft)
@@ -297,6 +314,7 @@ def update_all_price_trend_by_month(process_date):
         #del item['data']
 
         #计算均价
+        if cond not in all_price:continue
         np_all_price = np.array(all_price[cond][date_beg_str])
         #print np_all_price
         np_all_price = np_all_price[(np_all_price>=price_min) & (np_all_price<=price_max)]

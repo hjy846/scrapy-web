@@ -423,7 +423,8 @@ def get_up_down_num_by_month(request):
 
 @login_required
 def get_key_residences_info(request):
-    records = KeyResidencesModel.objects.aggregate(*[{"$sort":{"date":1}}, {"$group":{"_id":"$building", "date":{"$push":"$date"}, "total":{"$push":"$total"}, "up":{"$push":"$up"}, "down":{"$push":"$down"}, "avg":{"$push":"$avg"}, "new":{"$push":"$new"}}}])
+    query_building = [u'裕華大廈', u'保利達花園', u'亨達大廈', u'鴻發花園', u'綠楊花園', u'金海山花園', u'海名居', u'海天居', u'環宇天下', u'君悅灣', u'太子花城', u'濠庭都會', u'鴻業大廈', u'廣福安花園', u'金利達花園']
+    records = KeyResidencesModel.objects(__raw__={'building':{"$in":query_building}}).aggregate(*[{"$sort":{"date":1}}, {"$group":{"_id":"$building", "date":{"$push":"$date"}, "total":{"$push":"$total"}, "up":{"$push":"$up"}, "down":{"$push":"$down"}, "avg":{"$push":"$avg"}, "new":{"$push":"$new"}}}])
 
     ret = []
     for r in records:
