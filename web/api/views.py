@@ -424,7 +424,7 @@ def get_up_down_num_by_month(request):
 @login_required
 def get_key_residences_info(request):
     
-    query_buildings = [u'裕華大廈', u'保利達花園', u'亨達大廈', u'鴻發花園', u'綠楊花園', u'金海山花園', u'海名居', u'海天居', u'環宇天下', u'君悅灣', u'太子花城', u'濠庭都會', u'鴻業大廈', u'廣福安花園', u'金利達花園']
+    query_buildings = [u'裕華大廈', u'保利達花園', u'亨達大廈', u'鴻發花園', u'綠楊花園', u'金海山花園', u'海名居', u'海天居', u'寰宇天下', u'君悅灣', u'太子花城', u'濠庭都會', u'鴻業大廈', u'廣福安花園', u'金利達花園']
 
     ret = query_key_residences(query_buildings)
     
