@@ -14,4 +14,6 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def query(request):
     username = request.user.username
-    return render(request, 'all_residence_query/query.html', {'username':username})
+    now = datetime.now()
+    beg = now - timedelta(days = 30)
+    return render(request, 'all_residence_query/query.html', {'username':username, 'date_beg':beg.strftime('%Y-%m-%d'), 'date_end':now.strftime('%Y-%m-%d')})
