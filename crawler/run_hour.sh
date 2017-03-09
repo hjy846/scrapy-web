@@ -15,3 +15,13 @@ python scripts/preprocess.py ${running_date} >>${save_path}/log
 
 #scrapy crawl centaline --logfile=${save_path}/running_${running_date}.log >>${save_path}/log
 #scrapy crawl dsf -s DOWNLOAD_TIMEOUT=1800 --logfile=${save_path}/running_${running_date}.log >>${save_path}/log
+
+scrapy crawl residence_rent --logfile=${save_path}/running_${running_date}.log -a crawl_date=${running_date} >>${save_path}/log
+python scripts/preprocess_rent.py ${running_date} >>${save_path}/rent_log
+
+
+scrapy crawl parking --logfile=${save_path}/running_${running_date}.log -a crawl_date=${running_date} >>${save_path}/log
+python scripts/preprocess_parking.py ${running_date} >>${save_path}/parking_log
+
+scrapy crawl parking_rent --logfile=${save_path}/running_${running_date}.log -a crawl_date=${running_date} >>${save_path}/log
+python scripts/preprocess_parking_rent.py ${running_date} >>${save_path}/parking_rent_log

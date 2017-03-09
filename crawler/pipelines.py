@@ -10,7 +10,7 @@ from scrapy.conf import settings
 from scrapy.exceptions import DropItem
 from datetime import datetime
 from scrapy.pipelines.images import ImagesPipeline
-from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem, ZhongyuanItem, DsfItem, ZhongyuanNewItem
+from crawler.items import ResidenceItem, ResidenceDetailItem, ResidenceImageItem, ZhongyuanItem, DsfItem, ZhongyuanNewItem, ResidenceRentItem, ResidenceRentDetailItem, ResidenceRentImageItem, ParkingItem, ParkingDetailItem, ParkingImageItem, ParkingRentItem, ParkingRentDetailItem, ParkingRentImageItem
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -35,15 +35,32 @@ class ResidencePipeline(object):
         self.server = settings['MONGODB_SERVER']
         self.port = settings['MONGODB_PORT']
         self.db = settings['MONGODB_DB_RAW']
+        self.db_rent = settings['MONGODB_DB_RENT_RAW']
+        self.db_parking = settings['MONGODB_DB_PARKING_RAW']
+        self.db_rent_parking = settings['MONGODB_DB_PARKING_RENT_RAW']
         #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
         connection = pymongo.MongoClient(self.server, self.port)
-        self.db = connection[self.db]   
+        self.db = connection[self.db]  
+        self.db_rent = connection[self.db_rent]  
+        self.db_parking = connection[self.db_parking]
+        self.db_rent_parking = connection[self.db_rent_parking]
         if settings.get('crawl_date', None):   
             #print 'why ' * 100 
             self.collection = self.db[settings['crawl_date']]
-        else: self.collection = None
+            self.collection_rent = self.db_rent[settings['crawl_date']]
+            self.collection_parking = self.db_parking[settings['crawl_date']]
+            self.collection_rent_parking = self.db_rent_parking[settings['crawl_date']]
+        else: 
+            self.collection = None
+            self.collection_rent = None
+            self.collection_parking = None
+            self.collection_rent_parking = None
+        
 
         self.image_collection = self.db[settings['MONGODB_COLLECTION_IMAGE']]
+        self.rent_image_collection = self.db_rent[settings['MONGODB_COLLECTION_IMAGE']]
+        self.parking_image_collection = self.db[settings['MONGODB_COLLECTION_PARKING_IMAGE']]
+        self.rent_parking_image_collection = self.db[settings['MONGODB_COLLECTION_PARKING_IMAGE']]
 
     def process_image(self, item):
         try:
@@ -68,11 +85,50 @@ class ResidencePipeline(object):
         #log.msg('ok', level = log.DEBUG, spider=spider)
         return item
 
+    def process_rent_detail(self, item):
+        try:
+            item['_id'] = int(item['_id'])
+            self.collection_rent.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
+        except Exception as e:
+            #print '#' * 100
+            logging.error(repr(e))
+            print e
+        #log.msg('ok', level = log.DEBUG, spider=spider)
+        return item
+
+    def process_parking_detail(self, item):
+        try:
+            item['_id'] = int(item['_id'])
+            self.collection_parking.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
+        except Exception as e:
+            #print '#' * 100
+            logging.error(repr(e))
+            print e
+        #log.msg('ok', level = log.DEBUG, spider=spider)
+        return item
+
+    def process_rent_parking_detail(self, item):
+        try:
+            item['_id'] = int(item['_id'])
+            self.collection_rent_parking.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
+        except Exception as e:
+            #print '#' * 100
+            logging.error(repr(e))
+            print e
+        #log.msg('ok', level = log.DEBUG, spider=spider)
+        return item
+
     def process_item(self, item, spider):
         if isinstance(item, ResidenceImageItem):
             return self.process_image(item)
         elif isinstance(item, ResidenceDetailItem) or isinstance(item, ResidenceItem):
             return self.process_detail(item)
+        elif isinstance(item, ResidenceRentDetailItem) or isinstance(item, ResidenceRentItem):
+            return self.process_rent_detail(item)
+        elif isinstance(item, ParkingDetailItem) or isinstance(item, ParkingItem):
+            return self.process_parking_detail(item)
+        elif isinstance(item, ParkingRentDetailItem) or isinstance(item, ParkingRentItem):
+            return self.process_rent_parking_detail(item)
         return item
         #else:
         #    raise DropItem('unknown item')

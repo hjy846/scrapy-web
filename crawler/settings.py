@@ -94,6 +94,7 @@ MONGODB_SERVER='127.0.0.1'
 MONGODB_PORT=8888
 
 MONGODB_DB_RAW='residence_raw_hour'
+
 MONGODB_COLLECTION_ALL_RESIDENCES='all_residences'
 MONGODB_COLLECTION_IMAGE='image_info'
 
@@ -111,9 +112,29 @@ MONGODB_COLLECTION_PRICE_TREND='price_trend'
 MONGODB_COLLECTION_PRICE_TREND_MONTH='price_trend_by_month'
 MONGODB_COLLECTION_PRICE_TREND_BY_RESIDENCE='price_trend_by_residence'
 
+MONGODB_DB_RENT_RAW='residence_rent_raw_hour'
+MONGODB_COLLECTION_NEW_ADD_RENT='new_add_rent_residences'
+MONGODB_COLLECTION_RENT_RESIDENCE_NUM_BY_DAY='rent_residence_num_by_day'
+MONGODB_COLLECTION_ALL_RENT_RESIDENCES='all_rent_residences'
+
+MONGODB_DB_PARKING_RAW='parking_raw_hour'
+MONGODB_COLLECTION_NEW_ADD_PARKING='new_add_parking'
+MONGODB_COLLECTION_PARKING_NUM_BY_DAY='parking_num_by_day'
+MONGODB_COLLECTION_ALL_PARKINGS='all_parkings'
+MONGODB_COLLECTION_PARKING_IMAGE='parking_image_info'
+
+MONGODB_DB_PARKING_RENT_RAW='parking_rent_raw_hour'
+MONGODB_COLLECTION_NEW_ADD_RENT_PARKING='new_add_rent_parking'
+MONGODB_COLLECTION_RENT_PARKING_NUM_BY_DAY='rent_parking_num_by_day'
+MONGODB_COLLECTION_ALL_RENT_PARKINGS='all_rent_parkings'
+
 GO_NEXT=True
 DOWNLOAD_TIMEOUT=30
 
 INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=60&page=1"
+INIT_RENT_URL="http://www.malimalihome.net/residential?status=2&prepage=60&page=1"
+INIT_PARKING_URL="http://www.malimalihome.net/parking?status=1&prepage=60&page=1"
+INIT_RENT_PARKING_URL="http://www.malimalihome.net/parking?status=2&prepage=60&page=1"
+
 START_URL="http://www.malimalihome.net"
 
