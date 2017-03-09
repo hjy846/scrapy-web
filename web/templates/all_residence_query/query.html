@@ -4,27 +4,118 @@
 
 {% block stylesheet %}
 <link rel="stylesheet" href="/static/js/morris-chart/morris.css">
+<link rel="stylesheet" type="text/css" href="/static/js/bootstrap-datepicker/css/datepicker-custom.css" />
+<link rel="stylesheet" type="text/css" href="/static/js/bootstrap-daterangepicker/daterangepicker-bs3.css" />
 {% endblock %}
 
 {% block content %}
 <div class="wrapper">
-	<section class="panel">
-            <header class="panel-heading">
-                查詢語句：
-            </header>
-            <div class="panel-body">
-                <form method="get" class="form-horizontal bucket-form">
-                    <div class="form-group">
-                        
-                        <div class="col-sm-10">
-                            <textarea rows="6" class="form-control" id="query_info">{"info.building":{"$regex":"秀萍"}, "info.size":{"$gt":300},"info.update_time":{"$gt":"2016-01-20"}}</textarea>
-                        </div>
-
-                    </div>
-					<div><button class="btn btn-success" type="button" id="query_button">Query</button></div>
-                </form>
+    <section class="panel">
+        <header class="panel-heading custom-tab dark-tab">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#query" data-toggle="tab">Query</a>
+                </li>
+                <li class="">
+                    <a href="#query-by-sql" data-toggle="tab">Query by SQL</a>
+                </li>
                 
+            </ul>
+        </header>
+        <div class="panel-body">
+            <div class="tab-content">
+                <div class="tab-pane active" id="query">
+                    <form class="form-horizontal" role="form">
+                       <div class="form-group">
+                          <label class="col-sm-1 control-label" for="building">樓宇名</label>
+                          <div class="col-sm-3">
+                             <input class="form-control" id="building" type="text" placeholder="">
+                          </div>
+                          <label class="col-sm-2 control-label" for="region">地區</label>
+                          <div class="col-sm-2">
+                             <div class="btn-group">
+                                <button data-toggle="dropdown" type="button" class="btn btn-default dropdown-toggle" id="dropdown-region" region="">
+                                    全澳  <span class="caret"></span>
+                                </button>
+                                <ul role="menu" class="dropdown-menu" id="dropdown-menu-region">
+                                    <li><a href="#" region="">全澳</a></li>
+                                    <li><a href="#" region="澳門">澳門</a></li>
+                                    <li><a href="#" region="氹仔">氹仔</a></li>
+                                    <li><a href="#" region="路環">路環</a></li>
+                                </ul>
+                            </div>
+                          </div>
+                          <label class="col-sm-1 control-label" for="sort">排序</label>
+                          <div class="col-sm-3">
+                             <div class="btn-group">
+                                <button data-toggle="dropdown" type="button" class="btn btn-default dropdown-toggle" id="dropdown-sort" sort="price-per-ft2-low-high">
+                                    呎價(低->高)  <span class="caret"></span>
+                                </button>
+                                <ul role="menu" class="dropdown-menu" id="dropdown-menu-sort">
+                                    <li><a href="#" sort="price-per-ft2-low-high">呎價(低->高)</a></li>
+                                    <li><a href="#" sort="price-per-ft2-high-low">呎價(高->低)</a></li>
+                                    <li><a href="#" sort="price-low-high">總價(低->高)</a></li>
+                                    <li><a href="#" sort="price-high-low">總價(高->低)</a></li>
+                                    <li><a href="#" sort="update-time">最近更新時間</a></li>
+                                </ul>
+                             </div>
+                          </div>
+                       </div>
+                       <div class="form-group">
+                          <label class="col-sm-1 control-label" for="ds_username">呎價</label>
+                          <div class="col-sm-3">
+                             <div class="input-group input-large">
+                                <input type="text" class="form-control" name="from" id="price-per-ft2-low" value="">
+                                <span class="input-group-addon">To</span>
+                                <input type="text" class="form-control" name="to" id="price-per-ft2-high" value="">
+                            </div>
+                          </div>
+                          <label class="col-sm-2 control-label" for="ds_username">售價</label>
+                          <div class="col-sm-3">
+                             <div class="input-group input-large">
+                                <input type="text" class="form-control" name="from" id="price-low" value="">
+                                <span class="input-group-addon">To</span>
+                                <input type="text" class="form-control" name="to" id="price-high" value="">
+                            </div>
+                          </div>
+                       </div>
+                        <div class="form-group">
+                          <label class="col-sm-1 control-label" for="ds_username">面積</label>
+                          <div class="col-sm-3">
+                             <div class="input-group input-large">
+                                <input type="text" class="form-control" name="from" id="size-low" value="">
+                                <span class="input-group-addon">To</span>
+                                <input type="text" class="form-control" name="to" id="size-high" value="">
+                            </div>
+                          </div>
+                          <label class="col-sm-2 control-label" for="ds_username">發佈日期</label>
+                          <div class="col-sm-3">
+                             <div class="input-group custom-date-range" data-date="2013-01-01" data-date-format="yyyy-mm-dd" style="">
+                                    <input type="text" class="form-control dpd1" name="from" value="{{date_beg}}">
+                                    <span class="input-group-addon">To</span>
+                                    <input type="text" class="form-control dpd2" name="to" value="{{date_end}}">
+                            </div>
+                          </div>
+                       </div>
+                        <div><button class="btn btn-success query-button" type="button" id="query_button">Query</button></div>
+                </form>
+
+                </div>
+                <div class="tab-pane" id="query-by-sql">
+                    <form method="get" class="form-horizontal bucket-form">
+                        <div class="form-group">
+                            
+                            <div class="col-sm-10">
+                                <textarea rows="6" class="form-control" id="query_info">{"info.building":{"$regex":"秀萍"}, "info.size":{"$gt":300},"info.update_time":{"$gt":"2016-01-20"}}</textarea>
+                            </div>
+
+                        </div>
+                        <div><button class="btn btn-success query-button" type="button" id="query_button">Query</button></div>
+                    </form>
+            
+                </div>
             </div>
+        </div>
     </section>
     
     <div id=result>
@@ -45,9 +136,13 @@
 <!--dynamic table-->
 <script src="/static/js/morris-chart/morris.js"></script>
 <script src="/static/js/morris-chart/raphael-min.js"></script>
-<script src="/static/js/all_residence_query/new_query.js"></script>
+<script src="/static/js/all_residence_query/new_query2.js"></script>
 <!--script src="/static/js/flot.chart.init.js"></script-->
-
+<script type="text/javascript" src="/static/js/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-daterangepicker/daterangepicker.js"></script>
+<!--dynamic table initialization -->
+<script src="/static/js/pickers-init.js"></script>
 <script type="text/javascript">
 {% autoescape off %}
 

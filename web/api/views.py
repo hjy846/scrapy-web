@@ -139,17 +139,92 @@ def get_new_residence(region, date_beg, date_end):
 def all_residence_query(request):
     ret_dict = {'errorno':0, 'data':[], 'total':0}
     try:
-        query_params = json.loads(request.GET.get('params'))
-        page = int(request.GET.get('page', 1))
-        count = int(request.GET.get('count', 10))
-        beg = (page - 1) * count
-        end = page * count
-    
-        ret_dict['total'] = AllResidenceModel.objects(__raw__=query_params).count()
-        ret_dict['total_page'] = math.ceil(ret_dict['total'] * 1.0 / count)
-        ret_dict['page'] = page
-        result = AllResidenceModel.objects(__raw__=query_params).order_by('info.price_per_ft2')[beg:end]
+        query_type = request.GET.get('query_type', 'query_by_sql')
+        if query_type == 'query_by_sql':
+            query_params = json.loads(request.GET.get('sql'))
+            page = int(request.GET.get('page', 1))
+            count = int(request.GET.get('count', 10))
+            beg = (page - 1) * count
+            end = page * count
+        
+            ret_dict['total'] = AllResidenceModel.objects(__raw__=query_params).count()
+            ret_dict['total_page'] = math.ceil(ret_dict['total'] * 1.0 / count)
+            ret_dict['page'] = page
+            result = AllResidenceModel.objects(__raw__=query_params).order_by('info.price_per_ft2')[beg:end]
+        elif query_type == 'query':
+            query_params = {}
+            page = int(request.GET.get('page', 1))
+            count = int(request.GET.get('count', 10))
+            beg = (page - 1) * count
+            end = page * count
+
+            building = request.GET.get('building', '')
+            if building:
+                query_params['info.building'] = {'$regex':building}
+
+            region = request.GET.get('region', '')
+            if region:
+                query_params['info.region'] = region
+
+            date_beg = request.GET.get('date_beg', '')
+            date_end = request.GET.get('date_end', '')
+
+            if date_beg or date_end:
+                query_params['info.update_time'] = {}
+                if date_beg:
+                    query_params['info.update_time']['$gte'] = date_beg
+                if date_end:
+                    query_params['info.update_time']['$lte'] = date_end
+            
+            price_low = request.GET.get('price_low', 0)
+            price_high = request.GET.get('price_high', 0)
+            if price_low or price_high:
+                query_params['info.price'] = {}
+                if price_low:
+                    query_params['info.price']['$gte'] = int(price_low)
+                if price_high:
+                    query_params['info.price']['$lte'] = int(price_high)
+
+            price_per_ft2_low = request.GET.get('price_per_ft2_low', 0)
+            price_per_ft2_high = request.GET.get('price_per_ft2_high', 0)
+            if price_per_ft2_low or price_per_ft2_high :
+                query_params['info.price_per_ft2'] = {}
+                if price_per_ft2_low:
+                    query_params['info.price_per_ft2']['$gte'] = int(price_per_ft2_low)
+                if price_per_ft2_high:
+                    query_params['info.price_per_ft2']['$lte'] = int(price_per_ft2_high)
+
+            size_low = request.GET.get('size_low', 0)
+            size_high = request.GET.get('size_high', 0)
+            if size_low or size_high:
+                query_params['info.size'] = {}
+                if size_low:
+                    query_params['info.size']['$gte'] = int(size_low)
+                if size_high:
+                    query_params['info.size']['$lte'] = int(size_high)
+            
+            order_by = 'info.price_per_ft2'
+            order = request.GET.get('sort', 'price-per-ft2-low-high')
+            if order == 'price-per-ft2-high-low':
+                order_by = '-info.price_per_ft2'
+            elif order == 'price-low-high':
+                order_by = 'info.price'
+            elif order == 'price-high-low':
+                order_by = '-info.price'
+            elif order == 'update-time':
+                order_by = '-info.update_time'
+            
+            print query_params
+            ret_dict['total'] = AllResidenceModel.objects(__raw__=query_params).count()
+            ret_dict['total_page'] = math.ceil(ret_dict['total'] * 1.0 / count)
+            ret_dict['page'] = page
+            result = AllResidenceModel.objects(__raw__=query_params).order_by(order_by)[beg:end]
+        else:
+            ret_dict['errorno'] = 1
+            ret_dict['errormsg'] = repr(e)
+            return HttpResponse(json.dumps(ret_dict))
     except Exception as e:
+        print e
         ret_dict['errorno'] = 1
         ret_dict['errormsg'] = repr(e)
         return HttpResponse(json.dumps(ret_dict))
