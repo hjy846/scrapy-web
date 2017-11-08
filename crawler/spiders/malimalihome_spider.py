@@ -104,11 +104,15 @@ class ResidenceSpider(scrapy.Spider):
                     self.go_next = False
                     break
                 item = ResidenceItem()
-                item['building_name'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-c"]/div[@class="result-list-c-title"]/a/text()').extract()[0]
+                item['crawl_date'] = self.crawl_date
+                item['building_name'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-c"]/div[@class="result-list-c-title"]/a/text()').extract()[0].replace("\r\n", " ").replace("\n", " ")
                 item['link'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-c"]/div[@class="result-list-c-title"]/a/@href').extract()[0]
-                item['_id'] = item['link'].split('/')[-1:][0]
+                item['bid'] = item['link'].split('/')[-1:][0]
                 item['price'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-r"]/div[@class="result-list-r-price red"]/text()').re('(\d+)')[0]
                 item['price'] = int(item['price'])
+                item['living_room_num'] = 0
+                item['bed_room_num'] = 0
+                item['size'] = 0
                 huxing = info_list[0:-1]
 
                 record_bed_room = False
@@ -125,8 +129,8 @@ class ResidenceSpider(scrapy.Spider):
                 item['update_time'] = update_time
                 
                 item['remark'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-c"]/div[@class="result-list-c-desc"]/text()').extract()
-                item['remark'] = item['remark'][0] if len(item['remark']) else ''
-                item['agent_logo'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-r"]/div[@class="result-list-r-logo"]/img/@src').extract()[0]
+                item['remark'] = item['remark'][0].replace("\r\n", " ").replace("\n", " ") if len(item['remark']) else ''
+                item['agent_logo'] = sel.xpath('div[@style="float:right"]/div[@class="result-list-r"]/div[@class="result-list-r-logo"]/img/@src').extract()[0].strip()
                 item['photo_num'] = sel.xpath('div[@class="result-list-l"]/div[@class="list-cover"]/div[@class="total_img"]/text()').extract()
                 item['photo_num'] = int(item['photo_num'][0].split()[0]) if len(item['photo_num']) else 0
                 #self.fp.write(json.dumps(dict(item), ensure_ascii = False) + '\n')
@@ -142,8 +146,9 @@ class ResidenceSpider(scrapy.Spider):
         #next_page = response.xpath('//div[@class="result-list"]/div[@style="float:right"]').extract()
         next_page = response.xpath('//div[@class="page result-desc"]/div/div/ul[@class="pagination"]/li/a[@rel="next"]/@href').extract()
         if next_page and self.go_next:
-            url = response.urljoin(next_page[0])
-            yield scrapy.Request(url, self.parse_list)       
+            pass
+            #url = response.urljoin(next_page[0])
+            #yield scrapy.Request(url, self.parse_list)       
 
 
     def parse(self, response):
@@ -160,14 +165,16 @@ class ResidenceSpider(scrapy.Spider):
         for sel in response.xpath('//div[@class="module1 left"]'):
             try:
                 item = ResidenceDetailItem()
+                item['crawl_date'] = self.crawl_date
                 item['building'] = sel.xpath('div[@class="view-title"]/a/text()').extract()
                 if len(item['building']):
-                    item['building'] = item['building'][0]
+                    item['building'] = item['building'][0].replace("\r\n", " ").replace("\n", " ")
                 else:
-                    item['building'] = sel.xpath('div[@class="view-title"]/text()').extract()[0].strip().split()[0]
-                item['location'] = sel.xpath('div[@class="view-address"]/text()').extract()[0]
-                item['_id'] = sel.xpath('div[@class="view-no"]/b/text()').extract()[0].split('#')[-1:][0]
-                item['rent'] = sel.xpath('div[@class="view-price"]/div[@class="view-price-div view-price-yellow"]/div/text()').extract()[0].strip('$').strip('-')
+                    item['building'] = sel.xpath('div[@class="view-title"]/text()').extract()[0].strip().split()[0].replace("\r\n", " ").replace("\n", " ")
+                item['location'] = sel.xpath('div[@class="view-address"]/text()').extract()[0].replace(' ','').replace("\r\n", " ").replace("\n", " ")
+                item['bid'] = sel.xpath('div[@class="view-no"]/b/text()').extract()[0].split('#')[-1:][0]
+                item['rent'] = sel.xpath('div[@class="view-price"]/div[@class="view-price-div view-price-yellow"]/div/text()').extract()[0].strip('$').strip('-').replace("\r\n", " ").replace("\n", " ")
+                
                 #item['property_type'] = sel.xpath('div[@class="view-photo"]/div[@class="photo-small slick-initialized slick-slider"]/div[@class="slick-list draggable"]/div[@class="slick-track"]/div[@class="slick-slide slick-current slick-active"]/div[@class="image-border"]/div/center/img/@src').extract()
                 info_list_nodes = sel.xpath('div[@class="view-desc"]/div/table/tr')
                 info_list = []
@@ -184,7 +191,7 @@ class ResidenceSpider(scrapy.Spider):
                 item['block'] = info_list[2].strip().strip('-')
                 item['floor'] = info_list[3].strip().strip('-')
                 item['room'] = info_list[4].strip().strip('-')
-                item['layout'] = info_list[5].strip().strip('-')
+                item['layout'] = info_list[5].strip().strip('-').replace(' ','').replace("\r\n", " ").replace("\n", " ")
                 item['size'] = info_list[6].strip().strip('-').split()
                 if len(item['size']):
                     item['size'] = float(item['size'][0])
@@ -196,20 +203,25 @@ class ResidenceSpider(scrapy.Spider):
                 item['price'] = info_list[8].strip().strip('-').strip('$').split('\r\n')[0]
                 if item['price'] != "":
                     item['price'] = float(item['price'])
+                else: item['price'] = 0
                 item['price_per_ft2'] = info_list[9].strip().strip('-').strip('$').split(u'\u5143')[0]
                 if item['price_per_ft2'] != "":
                     item['price_per_ft2'] = float(item['price_per_ft2'])
+                else: item['price_per_ft2'] = 0
                 item['rental'] = info_list[10].strip().strip('-')
+                
                 item['rental_per_ft2'] = info_list[11].strip().strip('-')
+        
+
                 item['age'] = info_list[12].strip().strip('-').split()
                 if len(item['age']):
                     item['age'] = int(item['age'][0])
                 else:item['age'] = 0
-                item['lift'] = info_list[13].strip().strip('-')
-                item['direction'] = info_list[14].strip().strip('-')
-                item['views'] = info_list[15].strip().strip('-')
-                item['renovation'] = info_list[16].strip().strip('-')
-                item['other'] = info_list[17].strip().strip('-')
+                item['lift'] = info_list[13].strip().strip('-').replace(' ','')
+                item['direction'] = info_list[14].strip().strip('-').replace(' ','')
+                item['views'] = info_list[15].strip().strip('-').replace(' ','')
+                item['renovation'] = info_list[16].strip().strip('-').replace(' ','')
+                item['other'] = info_list[17].strip().strip('-').replace(' ','')
                 item['remark'] = info_list[18].strip().strip('-')
                 item['detail_insert_time'] = datetime.now()
                 item['image_list'] = sel.xpath('div[@class="view-photo"]/div[@class="photo-big"]/a/@href').extract()
@@ -232,12 +244,12 @@ class ResidenceSpider(scrapy.Spider):
                 if len(item['agent_address']):
                     item['agent_address'] = item['agent_address'][0].strip()
                 else:  item['agent_address'] = ""
-
+                #print(item)
                 yield item
 
                 image_item = ResidenceImageItem()
                 image_item['image_urls'] = item['image_list']
-                #yield image_item
+                yield image_item
             except Exception as e:
                 self.logger.error(response.url)
                 self.logger.error(repr(e))

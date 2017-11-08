@@ -109,23 +109,34 @@ def stat_region_data():
 
 PARAMS = get_param(sys)
 
-SERVER = settings['MONGODB_SERVER']
-PORT = settings['MONGODB_PORT']
-DB = settings['MONGODB_DB']
-RAW_DB = settings['MONGODB_DB_RAW']
-CONNECTION = pymongo.MongoClient(SERVER, PORT)
-RAW_DB = CONNECTION[RAW_DB] 
-DB = CONNECTION[DB]  
-RAW_COLLECTION = RAW_DB[PARAMS['crawl_date']]
-IMAGE_COLLECTION = RAW_DB[settings['MONGODB_COLLECTION_IMAGE']]
+#SERVER = settings['MONGODB_SERVER']
+#PORT = settings['MONGODB_PORT']
+#DB = settings['MONGODB_DB']
+#RAW_DB = settings['MONGODB_DB_RAW']
+#CONNECTION = pymongo.MongoClient(SERVER, PORT)
+#RAW_DB = CONNECTION[RAW_DB] 
+#DB = CONNECTION[DB]  
+#RAW_COLLECTION = RAW_DB[PARAMS['crawl_date']]
+#IMAGE_COLLECTION = RAW_DB[settings['MONGODB_COLLECTION_IMAGE']]
 
-COLLECTION = DB[settings['MONGODB_COLLECTION_ALL_RESIDENCES']]
-COLLECTION_NEW_ADD = DB[settings['MONGODB_COLLECTION_NEW_ADD']]
-COLLECTION_RESIDENCE_NUM_BY_DAY = DB[settings['MONGODB_COLLECTION_RESIDENCE_NUM_BY_DAY']]
+#COLLECTION = DB[settings['MONGODB_COLLECTION_ALL_RESIDENCES']]
+#COLLECTION_NEW_ADD = DB[settings['MONGODB_COLLECTION_NEW_ADD']]
+#COLLECTION_RESIDENCE_NUM_BY_DAY = DB[settings['MONGODB_COLLECTION_RESIDENCE_NUM_BY_DAY']]
+dbargs = dict(
+            host = '127.0.0.1' ,
+            db = 'property',
+            user = 'root', #replace with you user name
+            passwd = '', # replace with you password
+            charset = 'utf8',
+            cursorclass = MySQLdb.cursors.DictCursor,
+            use_unicode = True,
+            )    
+
+dbpool = adbapi.ConnectionPool('MySQLdb',**dbargs)
 
 if __name__ == '__main__':
     print PARAMS['crawl_date']
     find_new_residences()
-    stat_region_data()
+    #stat_region_data()
 
     

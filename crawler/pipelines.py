@@ -4,7 +4,6 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-import pymongo
 import logging
 from scrapy.conf import settings
 from scrapy.exceptions import DropItem
@@ -23,9 +22,14 @@ from pdfminer.layout import LTFigure
 from collections import defaultdict
 import json
 
+from twisted.enterprise import adbapi
+import MySQLdb
+import MySQLdb.cursors
+
 from datetime import datetime
 import copy
 import sys
+
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -38,35 +42,54 @@ class ResidencePipeline(object):
         self.db_rent = settings['MONGODB_DB_RENT_RAW']
         self.db_parking = settings['MONGODB_DB_PARKING_RAW']
         self.db_rent_parking = settings['MONGODB_DB_PARKING_RENT_RAW']
-        #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
-        connection = pymongo.MongoClient(self.server, self.port)
-        self.db = connection[self.db]  
-        self.db_rent = connection[self.db_rent]  
-        self.db_parking = connection[self.db_parking]
-        self.db_rent_parking = connection[self.db_rent_parking]
-        if settings.get('crawl_date', None):   
-            #print 'why ' * 100 
-            self.collection = self.db[settings['crawl_date']]
-            self.collection_rent = self.db_rent[settings['crawl_date']]
-            self.collection_parking = self.db_parking[settings['crawl_date']]
-            self.collection_rent_parking = self.db_rent_parking[settings['crawl_date']]
-        else: 
-            self.collection = None
-            self.collection_rent = None
-            self.collection_parking = None
-            self.collection_rent_parking = None
+
+        dbargs = dict(
+            host = '127.0.0.1' ,
+            db = 'property',
+            user = 'root', #replace with you user name
+            passwd = '', # replace with you password
+            charset = 'utf8',
+            cursorclass = MySQLdb.cursors.DictCursor,
+            use_unicode = True,
+            )    
+        self.dbpool = adbapi.ConnectionPool('MySQLdb',**dbargs)
         
 
-        self.image_collection = self.db[settings['MONGODB_COLLECTION_IMAGE']]
-        self.rent_image_collection = self.db_rent[settings['MONGODB_COLLECTION_IMAGE']]
-        self.parking_image_collection = self.db[settings['MONGODB_COLLECTION_PARKING_IMAGE']]
-        self.rent_parking_image_collection = self.db[settings['MONGODB_COLLECTION_PARKING_IMAGE']]
+
+        #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
+        #connection = pymongo.MongoClient(self.server, self.port)
+        #self.db = connection[self.db]  
+        #self.db_rent = connection[self.db_rent]  
+        #self.db_parking = connection[self.db_parking]
+        #self.db_rent_parking = connection[self.db_rent_parking]
+        #if settings.get('crawl_date', None):   
+            #print 'why ' * 100 
+        #    self.collection = self.db[settings['crawl_date']]
+        #    self.collection_rent = self.db_rent[settings['crawl_date']]
+        #    self.collection_parking = self.db_parking[settings['crawl_date']]
+        #    self.collection_rent_parking = self.db_rent_parking[settings['crawl_date']]
+        #else: 
+        #    self.collection = None
+        #    self.collection_rent = None
+        #    self.collection_parking = None
+        #    self.collection_rent_parking = None
+        
+
+        #self.image_collection = self.db[settings['MONGODB_COLLECTION_IMAGE']]
+        #self.rent_image_collection = self.db_rent[settings['MONGODB_COLLECTION_IMAGE']]
+        #self.parking_image_collection = self.db[settings['MONGODB_COLLECTION_PARKING_IMAGE']]
+        #self.rent_parking_image_collection = self.db[settings['MONGODB_COLLECTION_PARKING_IMAGE']]
 
     def process_image(self, item):
         try:
             for image_info in item['images']:
                 #print image_info['url']
-                self.image_collection.update_one({'url':image_info['url']}, {'$set':dict(image_info)}, upsert = True)
+                sql = "insert into image_info (url, path, checksum) \
+                VALUES ('%s', '%s', '%s') \
+                ON DUPLICATE KEY UPDATE path = '%s', checksum = '%s'" \
+                 % (image_info['url'], image_info['path'], image_info['checksum'], image_info['path'], image_info['checksum'])
+                self.dbpool.runQuery(sql)
+                #self.image_collection.update_one({'url':image_info['url']}, {'$set':dict(image_info)}, upsert = True)
         except Exception as e:
             #print '#' * 100
             logging.error(repr(e))
@@ -76,8 +99,47 @@ class ResidencePipeline(object):
         
     def process_detail(self, item):
         try:
-            item['_id'] = int(item['_id'])
-            self.collection.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
+            sql = "insert into residence_raw_hour (bid, building, location, rent, property_type, region, block, floor, room, \
+                    layout, size, net_size, price, price_per_ft2, rental, rental_per_ft2, age, lift, direction, views, \
+                    renovation, other, remark, detail_insert_time, image_list, agent_name, agent_contact, agent_company, \
+                    agent_address, crawl_date) \
+                VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') \
+                ON DUPLICATE KEY UPDATE building = '%s', location = '%s', rent = '%s', property_type = '%s', region = '%s', \
+                    block = '%s', floor = '%s', room = '%s', layout = '%s', size = '%s', net_size = '%s', price = '%s', \
+                    price_per_ft2 = '%s', rental = '%s', rental_per_ft2 = '%s', age = '%s', lift = '%s', direction = '%s', \
+                    views = '%s', renovation = '%s', other = '%s', remark = '%s', detail_insert_time = '%s', image_list = '%s', \
+                    agent_name = '%s', agent_contact = '%s', agent_company = '%s', agent_address = '%s'" \
+                 % (item['bid'], item['building'], item['location'], item['rent'], item['property_type'], item['region'], item['block'],\
+                    item['floor'], item['room'], item['layout'], item['size'] , item['net_size'], item['price'], item['price_per_ft2'], \
+                    item['rental'], item['rental_per_ft2'], item['age'], item['lift'], item['direction'], item['views'], item['renovation'],\
+                    item['other'], item['remark'], item['detail_insert_time'], json.dumps(item['image_list']), item['agent_name'], item['agent_contact'], \
+                    item['agent_company'], item['agent_address'], item['crawl_date'],\
+                    item['building'], item['location'], item['rent'], item['property_type'], item['region'], item['block'],\
+                    item['floor'], item['room'], item['layout'], item['size'] , item['net_size'], item['price'], item['price_per_ft2'], \
+                    item['rental'], item['rental_per_ft2'], item['age'], item['lift'], item['direction'], item['views'], item['renovation'],\
+                    item['other'], item['remark'], item['detail_insert_time'], json.dumps(item['image_list']), item['agent_name'], item['agent_contact'], \
+                    item['agent_company'], item['agent_address']
+                    )
+            #print sql
+            self.dbpool.runQuery(sql)
+        except Exception as e:
+            #print '#' * 100
+            logging.error(repr(e))
+            print e
+        #log.msg('ok', level = log.DEBUG, spider=spider)
+        return item
+
+    def process_list(self, item):
+        try:
+            sql = "insert into residence_raw_hour (bid, building_name, price, bed_room_num, living_room_num, size, link, remark, agent_logo, photo_num, list_insert_time, crawl_date) \
+                VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') \
+                ON DUPLICATE KEY UPDATE building_name = '%s', price = '%s', bed_room_num = '%s', living_room_num = '%s', size = '%s', link = '%s', remark = '%s', agent_logo = '%s', photo_num = '%s', list_insert_time = '%s'" \
+                 % (item['bid'], item['building_name'], item['price'], item['bed_room_num'], item['living_room_num'], item['size'], item['link'], item['remark'], item['agent_logo'], item['photo_num'], item['list_insert_time'], item['crawl_date'] \
+                    , item['building_name'], item['price'], item['bed_room_num'], item['living_room_num'], item['size'], item['link'], item['remark'], item['agent_logo'], item['photo_num'], item['list_insert_time'])
+            #print sql
+            self.dbpool.runQuery(sql)
+            #item['_id'] = int(item['_id'])
+            #self.collection.update_one({'_id':item['_id']}, {'$set':dict(item)}, upsert = True)
         except Exception as e:
             #print '#' * 100
             logging.error(repr(e))
@@ -121,7 +183,9 @@ class ResidencePipeline(object):
     def process_item(self, item, spider):
         if isinstance(item, ResidenceImageItem):
             return self.process_image(item)
-        elif isinstance(item, ResidenceDetailItem) or isinstance(item, ResidenceItem):
+        elif isinstance(item, ResidenceItem):
+            return self.process_list(item)
+        elif isinstance(item, ResidenceDetailItem):
             return self.process_detail(item)
         elif isinstance(item, ResidenceRentDetailItem) or isinstance(item, ResidenceRentItem):
             return self.process_rent_detail(item)
@@ -289,12 +353,12 @@ class DsfPipeline(object):
         self.port = settings['MONGODB_PORT']
         self.db = settings['MONGODB_DB']
         #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
-        connection = pymongo.MongoClient(self.server, self.port)
-        self.db = connection[self.db]   
+        #connection = pymongo.MongoClient(self.server, self.port)
+        #self.db = connection[self.db]   
         #self.collection = self.db[settings['MONGODB_COLLECTION_DSF']]
-        self.collection_raw = self.db[settings['MONGODB_COLLECTION_DSF_RAW']]
-        self.collection_xianlou_raw = self.db[settings['MONGODB_COLLECTION_DSF_XIANLOU_RAW']]
-        self.collection_louhua_raw = self.db[settings['MONGODB_COLLECTION_DSF_LOUHUA_RAW']]
+        #self.collection_raw = self.db[settings['MONGODB_COLLECTION_DSF_RAW']]
+        #self.collection_xianlou_raw = self.db[settings['MONGODB_COLLECTION_DSF_XIANLOU_RAW']]
+        #self.collection_louhua_raw = self.db[settings['MONGODB_COLLECTION_DSF_LOUHUA_RAW']]
         
     def process_dsf(self, item):
         try:
@@ -329,9 +393,9 @@ class ZhongyuanNewPipeline(object):
         self.port = settings['MONGODB_PORT']
         self.db = settings['MONGODB_DB']
         #self.col = settings['MONGODB_COLLECTION_RESIDENCE_BY_DAY']
-        connection = pymongo.MongoClient(self.server, self.port)
-        self.db = connection[self.db]   
-        self.collection = self.db[settings['MONGODB_COLLECTION_ZHONGYUAN_NEW']]
+        #connection = pymongo.MongoClient(self.server, self.port)
+        #self.db = connection[self.db]   
+        #self.collection = self.db[settings['MONGODB_COLLECTION_ZHONGYUAN_NEW']]
         
     def _process_item(self, item):
         update_item = dict(item)

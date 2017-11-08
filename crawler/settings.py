@@ -90,6 +90,14 @@ IMAGES_EXPIRES = 3650
 #HTTPCACHE_IGNORE_HTTP_CODES=[]
 #HTTPCACHE_STORAGE='scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+#Mysql数据库的配置信息
+MYSQL_HOST = '127.0.0.1'
+MYSQL_DBNAME = 'test'         #数据库名字，请修改
+MYSQL_USER = 'root'             #数据库账号，请修改 
+MYSQL_PASSWD = ''         #数据库密码，请修改
+
+MYSQL_PORT = 3306               #数据库端口，在dbhelper中使用
+
 MONGODB_SERVER='127.0.0.1'
 MONGODB_PORT=8888
 
@@ -131,7 +139,7 @@ MONGODB_COLLECTION_ALL_RENT_PARKINGS='all_rent_parkings'
 GO_NEXT=True
 DOWNLOAD_TIMEOUT=30
 
-INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=60&page=1"
+INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=10&page=1"
 INIT_RENT_URL="http://www.malimalihome.net/residential?status=2&prepage=60&page=1"
 INIT_PARKING_URL="http://www.malimalihome.net/parking?status=1&prepage=60&page=1"
 INIT_RENT_PARKING_URL="http://www.malimalihome.net/parking?status=2&prepage=60&page=1"

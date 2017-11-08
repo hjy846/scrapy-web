@@ -14,12 +14,14 @@ class ResidenceItem(scrapy.Item):
     remark  = scrapy.Field()
     agent_logo = scrapy.Field()
     photo_num = scrapy.Field()
-    _id = scrapy.Field()
+    bid = scrapy.Field()
     list_insert_time = scrapy.Field()
+    crawl_date = scrapy.Field()
 
 
 class ResidenceDetailItem(scrapy.Item):
-    _id = scrapy.Field()
+    bid = scrapy.Field()
+    crawl_date = scrapy.Field()
     building = scrapy.Field()
     location = scrapy.Field()
     rent = scrapy.Field()
