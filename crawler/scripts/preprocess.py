@@ -8,7 +8,10 @@ import json
 import pymongo
 import logging
 from scrapy.conf import settings
-
+from twisted.enterprise import adbapi
+import MySQLdb
+import MySQLdb.cursors
+from collections import defaultdict
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -46,66 +49,87 @@ def insert_into_all_residences():
     image_collection = raw_db[settings['MONGODB_COLLECTION_IMAGE']]
 
 def find_new_residences():
-    COLLECTION_NEW_ADD.remove({'date':PARAMS['crawl_date']})
-    res = RAW_COLLECTION.find()
+    sql_raw = "select * from residence_raw_hour where crawl_date = '%s';" % PARAMS['crawl_date']
+    cursor.execute(sql_raw)
+    res = cursor.fetchall()
     for r in res:
-        _id = r['_id']
-        #替换image url
-
-        save_record = {'info':r, 'update_time':datetime.now(), 'price_history.%s' % r['update_time']:r['price']}
-        #print save_record
-        if COLLECTION.find_one({'_id':_id, 'first_release_time':{'$lt':PARAMS['crawl_date']}}) == None:
-            r['create_time'] = datetime.now()
-            save_record['create_time'] = datetime.now()
-            save_record['first_release_time'] = r['update_time']
-            try:
-                region = r['region']
-                if r['region'] == u'澳門':
-                    region = 'macau'
-                elif r['region'] == u'氹仔':
-                    region = 'taipa'
-                elif r['region'] == u'路環':
-                    region = 'coloane'
-                print '%s.%s' % (region, _id)
-                COLLECTION_NEW_ADD.update({'date':PARAMS['crawl_date']}, {"$set":{'%s.%s' % (region, _id):r, '%s.%s' % ('total', _id):r}}, upsert = True)
-            except Exception as e:
-                print e
-
-        COLLECTION.update({'_id':_id}, {'$set':save_record}, upsert = True)
+        bid = r['bid']
+        r['price'] = 123
+        price_history = {r['crawl_date']:r['price']}
+        #插入数据
+        sql_upsert = "insert into residence_hour(create_time, bid, living_room_num, rent, property_type, photo_num, size, layout, \
+                    floor, rental_per_ft2, direction, other, location, building_name, update_time, agent_logo, views, price, lift, \
+                    link, rental, renovation, building, remark, price_per_ft2, room, region, net_size, detail_insert_time, \
+                    bed_room_num, list_insert_time, age, block, first_release_time, agent_name, agent_contact, agent_company,\
+                    agent_address, image_list, price_history) \
+                VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \
+                    '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \
+                    '%s', '%s', '%s', '%s', '%s', '%s') \
+                ON DUPLICATE KEY UPDATE living_room_num = '%s', rent = '%s', property_type = '%s', photo_num = '%s', \
+                    size = '%s', layout = '%s', floor = '%s', rental_per_ft2 = '%s', direction = '%s', other = '%s', \
+                    location = '%s', building_name = '%s', update_time = '%s', agent_logo = '%s', views = '%s', price = '%s', lift = '%s', \
+                    link = '%s', rental = '%s', renovation = '%s', building = '%s', remark = '%s', price_per_ft2 = '%s', \
+                    room = '%s', region = '%s', net_size = '%s', detail_insert_time = '%s', bed_room_num = '%s', \
+                    list_insert_time = '%s', age = '%s', block = '%s', agent_name = '%s', agent_contact = '%s', \
+                    agent_company = '%s', agent_address = '%s', image_list = '%s', price_history = JSON_SET(price_history, '$.\"%s\"', %s);" % \
+                (datetime.now(), r['bid'], r['living_room_num'], r['rent'], r['property_type'], r['photo_num'], r['size'], r['layout'], \
+                    r['floor'], r['rental_per_ft2'], r['direction'], r['other'], r['location'], r['building_name'], r['crawl_date'], r['agent_logo'], \
+                    r['views'], r['price'], r['lift'], r['link'], r['rental'], r['renovation'], r['building'], r['remark'], \
+                    r['price_per_ft2'], r['room'], r['region'], r['net_size'], r['detail_insert_time'], r['bed_room_num'], \
+                    r['list_insert_time'], r['age'], r['block'], r['crawl_date'], r['agent_name'], r['agent_contact'], \
+                    r['agent_company'], r['agent_address'], r['image_list'], json.dumps(price_history), r['living_room_num'], r['rent'], r['property_type'], \
+                    r['photo_num'], r['size'], r['layout'], r['floor'], r['rental_per_ft2'], r['direction'], r['other'], \
+                    r['location'], r['building_name'], r['crawl_date'], r['agent_logo'], r['views'], r['price'], r['lift'], r['link'], \
+                    r['rental'], r['renovation'], r['building'], r['remark'], r['price_per_ft2'], r['room'], r['region'], \
+                    r['net_size'], r['detail_insert_time'], r['bed_room_num'], r['list_insert_time'], r['age'], r['block'], \
+                    r['agent_name'], r['agent_contact'], r['agent_company'], r['agent_address'], r['image_list'], r['crawl_date'], r['price'])
+        try:
+            cursor.execute(sql_upsert)
+            db.commit()
+        except MySQLdb.Error, e:
+            print(e)
+    
 
 def stat_region_data():
-    find_param = {'region':u"氹仔"}
-    count = RAW_COLLECTION.count(find_param)
-    result = {}
-    result['taipa'] = count
+    sql = "select * from residence_hour where update_time = '%s'" % PARAMS['crawl_date']
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    result = defaultdict(int)
+    for r in res:
+        result['total'] += 1
+        if r['region'] == u"氹仔":
+            result['taipa'] += 1
+        elif r['region'] == u"澳門":
+            result['macau'] += 1
+        elif r['region'] == u"路環":
+            result['coloane'] += 1
+        else: result['other'] += 1
 
-    find_param = {'region':u"澳門"}
-    count = RAW_COLLECTION.count(find_param)
-    result['macau'] = count
+        if r['first_release_time'] == r['update_time']:
+            result['total_new'] += 1
+            if r['region'] == u"氹仔":
+                result['taipa_new'] += 1
+            elif r['region'] == u"澳門":
+                result['macau_new'] += 1
+            elif r['region'] == u"路環":
+                result['coloane_new'] += 1
+            else: result['other_new'] += 1
 
-    find_param = {'region':u"路環"}
-    count = RAW_COLLECTION.count(find_param)
-    result['coloane'] = count
+    print(result['other'])
 
-    count = RAW_COLLECTION.count()
-    result['total'] = count
-    result['date'] = PARAMS['crawl_date']
-    result['insert_time'] = datetime.now()
-
-    new_add = COLLECTION_NEW_ADD.find_one({'date':PARAMS['crawl_date']})
-    #print new_add
-    if new_add:
-        result['taipa_new'] = len(new_add.get(u'taipa', {}))
-        result['macau_new'] = len(new_add.get(u'macau', {}))
-        result['coloane_new'] = len(new_add.get(u'coloane', {}))
-        result['total_new'] = len(new_add.get('total', {}))
-    else:
-        result['taipa_new'] = 0
-        result['macau_new'] = 0
-        result['coloane_new'] = 0
-        result['total_new'] = 0
-    #print result
-    COLLECTION_RESIDENCE_NUM_BY_DAY.update({'date': PARAMS['crawl_date']}, result, upsert = True)
+    sql_upsert = "insert into residence_num_by_day (date, total, macau, taipa, coloane, other, total_new, macau_new, \
+                    taipa_new, coloane_new, other_new, create_time) \
+                VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') \
+                ON DUPLICATE KEY UPDATE total = '%s', macau = '%s', taipa = '%s', coloane = '%s', other = '%s', total_new = '%s', \
+                    macau_new = '%s', taipa_new = '%s', coloane_new = '%s', other_new = '%s'" \
+                % (PARAMS['crawl_date'], result['total'], result['macau'], result['taipa'], result['coloane'], result['other'], \
+                    result['total_new'], result['macau_new'], result['taipa_new'], result['coloane_new'], result['other_new'], \
+                    datetime.now(), result['total'], result['macau'], result['taipa'], result['coloane'], result['other'], \
+                    result['total_new'], result['macau_new'], result['taipa_new'], result['coloane_new'], result['other_new'])
+    print sql_upsert
+    cursor.execute(sql_upsert)
+    db.commit()
+    
 
 PARAMS = get_param(sys)
 
@@ -132,11 +156,15 @@ dbargs = dict(
             use_unicode = True,
             )    
 
-dbpool = adbapi.ConnectionPool('MySQLdb',**dbargs)
+#dbpool = adbapi.ConnectionPool('MySQLdb',**dbargs)
+db = MySQLdb.connect("localhost","root","","property" )
+cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
 
 if __name__ == '__main__':
     print PARAMS['crawl_date']
-    find_new_residences()
-    #stat_region_data()
+    PARAMS['crawl_date'] = "2017-11-08"
+    #find_new_residences()
+    stat_region_data()
 
     

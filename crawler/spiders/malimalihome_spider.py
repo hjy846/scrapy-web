@@ -217,11 +217,11 @@ class ResidenceSpider(scrapy.Spider):
                 if len(item['age']):
                     item['age'] = int(item['age'][0])
                 else:item['age'] = 0
-                item['lift'] = info_list[13].strip().strip('-').replace(' ','')
-                item['direction'] = info_list[14].strip().strip('-').replace(' ','')
-                item['views'] = info_list[15].strip().strip('-').replace(' ','')
-                item['renovation'] = info_list[16].strip().strip('-').replace(' ','')
-                item['other'] = info_list[17].strip().strip('-').replace(' ','')
+                item['lift'] = info_list[13].strip().strip('-').replace(' ','').replace("\r\n", " ").replace("\n", " ")
+                item['direction'] = info_list[14].strip().strip('-').replace(' ','').replace("\r\n", " ").replace("\n", " ")
+                item['views'] = info_list[15].strip().strip('-').replace(' ','').replace("\r\n", " ").replace("\n", " ")
+                item['renovation'] = info_list[16].strip().strip('-').replace(' ','').replace("\r\n", " ").replace("\n", " ")
+                item['other'] = info_list[17].strip().strip('-').replace(' ','').replace("\r\n", " ").replace("\n", " ")
                 item['remark'] = info_list[18].strip().strip('-')
                 item['detail_insert_time'] = datetime.now()
                 item['image_list'] = sel.xpath('div[@class="view-photo"]/div[@class="photo-big"]/a/@href').extract()
