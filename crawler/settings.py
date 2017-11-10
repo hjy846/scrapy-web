@@ -139,7 +139,7 @@ MONGODB_COLLECTION_ALL_RENT_PARKINGS='all_rent_parkings'
 GO_NEXT=True
 DOWNLOAD_TIMEOUT=30
 
-INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=10&page=1"
+INIT_URL="http://www.malimalihome.net/residential?status=1&prepage=60&page=1"
 INIT_RENT_URL="http://www.malimalihome.net/residential?status=2&prepage=60&page=1"
 INIT_PARKING_URL="http://www.malimalihome.net/parking?status=1&prepage=60&page=1"
 INIT_RENT_PARKING_URL="http://www.malimalihome.net/parking?status=2&prepage=60&page=1"

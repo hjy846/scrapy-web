@@ -146,9 +146,8 @@ class ResidenceSpider(scrapy.Spider):
         #next_page = response.xpath('//div[@class="result-list"]/div[@style="float:right"]').extract()
         next_page = response.xpath('//div[@class="page result-desc"]/div/div/ul[@class="pagination"]/li/a[@rel="next"]/@href').extract()
         if next_page and self.go_next:
-            pass
-            #url = response.urljoin(next_page[0])
-            #yield scrapy.Request(url, self.parse_list)       
+            url = response.urljoin(next_page[0])
+            yield scrapy.Request(url, self.parse_list)       
 
 
     def parse(self, response):
