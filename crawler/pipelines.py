@@ -125,6 +125,7 @@ class ResidencePipeline(object):
         except Exception as e:
             #print '#' * 100
             logging.error(repr(e))
+            print sql
             print e
         #log.msg('ok', level = log.DEBUG, spider=spider)
         return item
@@ -143,6 +144,7 @@ class ResidencePipeline(object):
         except Exception as e:
             #print '#' * 100
             logging.error(repr(e))
+            print sql
             print e
         #log.msg('ok', level = log.DEBUG, spider=spider)
         return item

@@ -48,16 +48,15 @@ def insert_into_all_residences():
     
     image_collection = raw_db[settings['MONGODB_COLLECTION_IMAGE']]
 
-def find_new_residences():
+def update_residences():
     sql_raw = "select * from residence_raw_hour where crawl_date = '%s';" % PARAMS['crawl_date']
     cursor.execute(sql_raw)
     res = cursor.fetchall()
     for r in res:
         bid = r['bid']
-        r['price'] = 123
         price_history = {r['crawl_date']:r['price']}
         #插入数据
-        sql_upsert = "insert into residence_hour(create_time, bid, living_room_num, rent, property_type, photo_num, size, layout, \
+        sql_upsert = "insert into all_residences(create_time, bid, living_room_num, rent, property_type, photo_num, size, layout, \
                     floor, rental_per_ft2, direction, other, location, building_name, update_time, agent_logo, views, price, lift, \
                     link, rental, renovation, building, remark, price_per_ft2, room, region, net_size, detail_insert_time, \
                     bed_room_num, list_insert_time, age, block, first_release_time, agent_name, agent_contact, agent_company,\
@@ -91,7 +90,7 @@ def find_new_residences():
     
 
 def stat_region_data():
-    sql = "select * from residence_hour where update_time = '%s'" % PARAMS['crawl_date']
+    sql = "select * from all_residences where update_time = '%s'" % PARAMS['crawl_date']
     cursor.execute(sql)
     res = cursor.fetchall()
     result = defaultdict(int)
@@ -115,7 +114,6 @@ def stat_region_data():
                 result['coloane_new'] += 1
             else: result['other_new'] += 1
 
-    print(result['other'])
 
     sql_upsert = "insert into residence_num_by_day (date, total, macau, taipa, coloane, other, total_new, macau_new, \
                     taipa_new, coloane_new, other_new, create_time) \
@@ -126,7 +124,6 @@ def stat_region_data():
                     result['total_new'], result['macau_new'], result['taipa_new'], result['coloane_new'], result['other_new'], \
                     datetime.now(), result['total'], result['macau'], result['taipa'], result['coloane'], result['other'], \
                     result['total_new'], result['macau_new'], result['taipa_new'], result['coloane_new'], result['other_new'])
-    print sql_upsert
     cursor.execute(sql_upsert)
     db.commit()
     
@@ -157,14 +154,16 @@ dbargs = dict(
             )    
 
 #dbpool = adbapi.ConnectionPool('MySQLdb',**dbargs)
-db = MySQLdb.connect("localhost","root","","property" )
+db = MySQLdb.connect("localhost","root","","property", use_unicode = True, charset = "utf8")
 cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
 
 if __name__ == '__main__':
     print PARAMS['crawl_date']
-    PARAMS['crawl_date'] = "2017-11-08"
-    #find_new_residences()
+    #PARAMS['crawl_date'] = "2017-11-08"
+    print "update residences"
+    update_residences()
+    print "stat residences by region"
     stat_region_data()
 
     
